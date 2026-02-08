@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Meccanoid Control Panel</title>
+
+    <style>
+        body {
+            background-color: #1e1e2f;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #ffd700;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            margin-top: 30px;
+            color: #9cdcfe;
+        }
+
+        .section {
+            background-color: #2d2d44;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 6px 10px rgba(0,0,0,0.3);
+        }
+
+        .buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        button {
+            background-color: #3a3a5c;
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #505080;
+            transform: scale(1.05);
+        }
+
+        input[type="range"] {
+            width: 100%;
+        }
+
+        .slider-group {
+            margin-top: 15px;
+        }
+
+        .status {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #7fff7f;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>🤖 Meccanoid – Control Panel</h1>
+
+<!-- TÊTE -->
+<div class="section">
+    <h2>Tête</h2>
+
+    <div class="buttons">
+        <button onclick="sendCmd('/head/left')">← Gauche</button>
+        <button onclick="sendCmd('/head/right')">→ Droite</button>
+        <button onclick="sendCmd('/head/up')">↑ Haut</button>
+        <button onclick="sendCmd('/head/down')">↓ Bas</button>
+        <button onclick="sendCmd('/head/center')">⦿ Centre</button>
+    </div>
+
+    <div class="slider-group">
+        <label>Rotation (servo 0)</label>
+        <input type="range" min="10" max="170" value="90"
+               oninput="sendSlider('/head/servo/0', this.value)">
+    </div>
+
+    <div class="slider-group">
+        <label>Inclinaison (servo 1)</label>
+        <input type="range" min="45" max="135" value="90"
+               oninput="sendSlider('/head/servo/1', this.value)">
+    </div>
+</div>
+
+<!-- BRAS GAUCHE -->
+<div class="section">
+    <h2>Bras gauche</h2>
+
+    <div class="buttons">
+        <button onclick="sendCmd('/left/up')">Lever</button>
+        <button onclick="sendCmd('/left/down')">Baisser</button>
+        <button onclick="sendCmd('/left/open')">Ouvrir</button>
+        <button onclick="sendCmd('/left/close')">Fermer</button>
+    </div>
+</div>
+
+<!-- BRAS DROIT -->
+<div class="section">
+    <h2>Bras droit</h2>
+
+    <div class="buttons">
+        <button onclick="sendCmd('/right/up')">Lever</button>
+        <button onclick="sendCmd('/right/down')">Baisser</button>
+        <button onclick="sendCmd('/right/open')">Ouvrir</button>
+        <button onclick="sendCmd('/right/close')">Fermer</button>
+    </div>
+</div>
+
+<!-- ACTIONS GLOBALES -->
+<div class="section">
+    <h2>Actions globales</h2>
+
+    <div class="buttons">
+        <button onclick="sendCmd('/robot/home')">Position neutre</button>
+        <button onclick="sendCmd('/robot/stop')">STOP</button>
+        <button onclick="sendCmd('/robot/demo')">Démo</button>
+    </div>
+</div>
+
+<!-- YEUX -->
+<div class="section">
+    <h2>Yeux</h2>
+
+    <div class="buttons">
+        <button onclick="sendCmd('/eyes/off')">Éteints</button>
+        <button onclick="sendCmd('/eyes/white')">Blanc</button>
+        <button onclick="sendCmd('/eyes/red')">Rouge</button>
+        <button onclick="sendCmd('/eyes/green')">Vert</button>
+        <button onclick="sendCmd('/eyes/blue')">Bleu</button>
+        <button onclick="sendCmd('/eyes/rainbow')">Arc-en-ciel</button>
+    </div>
+</div>
+
+
+<div class="status" id="status">
+    Statut : prêt
+</div>
+
+<script>
+    function sendCmd(url) {
+        fetch(url)
+            .then(() => updateStatus("Commande envoyée : " + url))
+            .catch(() => updateStatus("Erreur ESP32"));
+    }
+
+    function sendSlider(baseUrl, value) {
+        fetch(baseUrl + "/" + value)
+            .then(() => updateStatus(baseUrl + " → " + value))
+            .catch(() => updateStatus("Erreur slider"));
+    }
+
+    function updateStatus(text) {
+        document.getElementById("status").innerText = "Statut : " + text;
+    }
+</script>
+
+</body>
+</html>
