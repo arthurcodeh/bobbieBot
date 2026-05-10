@@ -6,15 +6,17 @@
 #include "members/head/Head.h"
 #include "members/arm/Arm.h"
 #include "communication/meccanoid/MeccanoidController.h"
+#include "config/Pins.h"
+#include "config/RobotConfig.h"
 
-Tete tete(6);
-Bras brasGauche(9, "left");
-Bras brasDroit(8, "right");
+Tete tete(PIN_HEAD);
+Bras brasGauche(PIN_ARM_LEFT, "left");
+Bras brasDroit(PIN_ARM_RIGHT, "right");
 
 MeccanoidController controller;
 
 void setup() {
-    Serial.begin(9600);
+    Serial.begin(SERIAL_BEGIN);
 
     controller.add_member(&tete);
     controller.add_member(&brasGauche);

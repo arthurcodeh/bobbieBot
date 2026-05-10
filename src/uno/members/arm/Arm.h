@@ -1,11 +1,12 @@
 #pragma once
 #include "../Member.h"
 #include <string.h>
-
+static const uint8_t LEFT_SERVO_COUNT = 3;
+static const uint8_t RIGHT_SERVO_COUNT = 3;
 class Bras : public Membre {
 private:
-    static ServoSpec leftSpecs[3];
-    static ServoSpec rightSpecs[3];
+    static ServoSpec leftSpecs[LEFT_SERVO_COUNT];
+    static ServoSpec rightSpecs[RIGHT_SERVO_COUNT];
 
 public:
     Bras(const int pin, const char* side)
@@ -13,6 +14,6 @@ public:
             pin,
             side,
             (strcmp(side, "left") == 0) ? leftSpecs : rightSpecs,
-            3
+            RIGHT_SERVO_COUNT
         ) {}
 };

@@ -9,3 +9,6 @@
 
 // Vitesse de communication série avec l'esp32
 #define SERIAL_BAUDRATE 115200
+
+// Vitesse de communication série pour le débogage
+#define SERIAL_BEGIN 9600

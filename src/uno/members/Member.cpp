@@ -1,18 +1,26 @@
+// File: Member.cpp
+// Role: Implémentation de la classe de base Membre
 #include "Member.h"
 
 Membre::Membre(int pin, const char* name, const ServoSpec* specs, uint8_t count)
     : pin(pin), name(name), meccanoid(pin), servoCount(count)
 {
-    if (count > MAX_SERVOS) servoCount = MAX_SERVOS;
+    // Sécurité : on ne dépasse jamais MAX_SERVOS
+    if (servoCount > MAX_SERVOS) servoCount = MAX_SERVOS;
 
     meccanoid.begin(2400);
 
     for (uint8_t i = 0; i < servoCount; i++) {
+        // Copie les specs (min, max, position, destination)
         servos[i] = specs[i];
+
+        // Récupère le servo physique depuis la lib Meccanoid
         MeccanoidServo servo = meccanoid.getServo(i);
-        servoInstances[i] = new MeccanoidServo(servo);
-        servos[i].servo = servoInstances[i];
-        servos[i].position = 90;
+        servoInstances[i]    = new MeccanoidServo(servo);
+        servos[i].servo      = servoInstances[i];
+
+        // Position et destination de départ : centre
+        servos[i].position    = 90;
         servos[i].destination = 90;
     }
 }
@@ -26,7 +34,7 @@ void Membre::setDestination(uint8_t index, int angle) {
 
     ServoSpec& spec = servos[index];
 
-    // Appliquer les limites
+    // Clamp : on force l'angle dans les limites autorisées
     if (angle < spec.min) angle = spec.min;
     if (angle > spec.max) angle = spec.max;
 
@@ -36,22 +44,23 @@ void Membre::setDestination(uint8_t index, int angle) {
 void Membre::move() {
     for (uint8_t i = 0; i < servoCount; i++) {
         ServoSpec& spec = servos[i];
-        if (spec.position != spec.destination) {
-            // Calculer le prochain pas
-            int diff = spec.destination - spec.position;
 
-            if (abs(diff) <= vitesse) {
-                // Arrivé à destination
-                spec.position = spec.destination;
-            } else {
-                // Se déplacer progressivement
-                spec.position += (diff > 0) ? vitesse : -vitesse;
-            }
+        // Rien à faire si déjà à destination
+        if (spec.position == spec.destination) continue;
 
-            // Envoyer la commande au servo physique
-            if (spec.servo != nullptr) {
-                spec.servo->move(spec.position);
-            }
+        int diff = spec.destination - spec.position;
+
+        if (abs(diff) <= vitesse) {
+            // On est assez proche : on se cale directement sur la cible
+            spec.position = spec.destination;
+        } else {
+            // On avance d'un pas dans la bonne direction
+            spec.position += (diff > 0) ? vitesse : -vitesse;
+        }
+
+        // Envoi de la nouvelle position au servo physique
+        if (spec.servo != nullptr) {
+            spec.servo->move(spec.position);
         }
     }
 }
