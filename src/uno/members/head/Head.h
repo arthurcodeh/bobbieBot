@@ -6,8 +6,9 @@
 
 #pragma once
 #include "../Member.h"
+#include "uno/config/Pins.h"
 
-static const uint8_t HEAD_SERVO_COUNT = 2;
+static const uint8_t HEAD_SERVO_COUNT = SERVOS_HEAD;
 
 class Tete : public Membre {
 private:
