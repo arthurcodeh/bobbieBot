@@ -160,8 +160,9 @@ public:
 class Tete : public Membre {
 public:
     explicit Tete(int pin)
-        : Membre(pin, "head", { {10,170}, {45,135} })
-    {}
+        : Membre(pin, "head", { {10,170}, {45,135} }) {
+        serialPrint("Tete initialized on pin " + std::to_string(pin));
+    }
 };
 
 /*
@@ -172,7 +173,7 @@ public:
 */
 class Bras : public Membre {
 public:
-    Bras(int pin, std::string sens)
+    Bras(int pin, const std::string &sens)
         : Membre(
             pin,
             sens, // le nom du membre devient "left" ou "right"

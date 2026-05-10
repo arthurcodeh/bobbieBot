@@ -1,0 +1,42 @@
+{
+  "name": "MeccanoidLib",
+  "version": "1.0.0",
+  "description": "Librairie pour contrôler les servos et LEDs Meccanoid avec Arduino. Contrôle de servos type Dev-08 / Smart Servo via protocole série, et LEDs, le tout sans dépendre de MECControl.",
+  "keywords": [
+    "meccanoid",
+    "servo",
+    "led",
+    "meccano",
+    "smart servo",
+    "dev-08",
+    "robot"
+  ],
+  "authors": [
+    {
+      "name": "Arthur",
+      "maintainer": true
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-repo/bobbieBot.git"
+  },
+  "license": "MIT",
+  "frameworks": ["arduino"],
+  "platforms": "*",
+  "headers": ["Meccanoid.h"],
+  "examples": [
+    "examples/FullRobot.ino",
+    "examples/LED_Basic.ino",
+    "examples/Servo_Basic.ino"
+  ],
+  "export": {
+    "include": [
+      "src/*",
+      "examples/*",
+      "keywords.txt",
+      "library.properties",
+      "library.json"
+    ]
+  }
+}

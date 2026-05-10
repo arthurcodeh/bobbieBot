@@ -1,0 +1,6 @@
+Meccanoid   KEYWORD1
+MeccanoidServo   KEYWORD1
+MeccanoidLED   KEYWORD1
+move   KEYWORD2
+setColor   KEYWORD2
+getServo   KEYWORD2
