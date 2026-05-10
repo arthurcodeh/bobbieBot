@@ -14,7 +14,12 @@ Membre::Membre(int pin, const char* name, const ServoSpec* specs, uint8_t count)
         // Copie les specs (min, max, position, destination)
         servos[i] = specs[i];
 
-        // Récupère le servo physique depuis la lib Meccanoid
+
+        // Sécurité : on s'assure de ne pas avoir d'instance déjà créée (libère la mémoire si besoin)
+        delete servoInstances[i]; // (libere la mémoire mais pointe tjrs vers l'instance, d'où la ligne suivante)
+        servoInstances[i] = nullptr; // on s'assure de ne pas avoir de pointeur vers une instance supprimée
+
+        // Récupère le servo physique depuis la lib Meccanoid et crée une instance de notre wrapper MeccanoidServo
         MeccanoidServo servo = meccanoid.getServo(i);
         servoInstances[i]    = new MeccanoidServo(servo);
         servos[i].servo      = servoInstances[i];

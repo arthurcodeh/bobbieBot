@@ -1,5 +1,6 @@
 #pragma once
 #include "../../members/Member.h"
+#include "../serial/SerialProtocol.h"
 
 #define MAX_MEMBERS 10
 
@@ -10,5 +11,5 @@ private:
 
 public:
     void add_member(Membre* m);
-    void update() const;
+    void update();
 };

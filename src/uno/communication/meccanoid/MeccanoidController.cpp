@@ -1,6 +1,4 @@
 #include "MeccanoidController.h"
-#include <HardwareSerial.h>
-#include <WString.h>
 #include <string.h>
 
 void MeccanoidController::add_member(Membre* m) {
@@ -9,32 +7,18 @@ void MeccanoidController::add_member(Membre* m) {
     }
 }
 
-void MeccanoidController::update() const {
-    if (!Serial.available()) return;
+void MeccanoidController::update() {
+   Command cmd;
 
-    String cmd = Serial.readStringUntil('&');
-    cmd.trim();
+    // rien faire si aucune commande reçue
+    if (!SerialProtocol::read(cmd)) {
+        return;
+    }
 
-    // Format attendu: "nom_membre index angle"
-    // Exemple: "left 0 90"
-    int firstSpace = cmd.indexOf(' ');
-    if (firstSpace == -1) return;
-
-    int secondSpace = cmd.indexOf(' ', firstSpace + 1);
-    if (secondSpace == -1) return;
-
-    String name = cmd.substring(0, firstSpace);
-    String indexStr = cmd.substring(firstSpace + 1, secondSpace);
-    String angleStr = cmd.substring(secondSpace + 1);
-
-    int index = indexStr.toInt();
-    int angle = angleStr.toInt();
-
-    // Trouver et commander le membre correspondant
+    // Traiter la commande reçue
     for (uint8_t i = 0; i < memberCount; i++) {
-        if (strcmp(membres[i]->getName(), name.c_str()) == 0) {
-            membres[i]->setDestination(index, angle);
-            break;
+        if (strcmp(membres[i]->getName(), cmd.member) == 0) {
+            break; // Commande traitée, sortir de la boucle
         }
     }
 }

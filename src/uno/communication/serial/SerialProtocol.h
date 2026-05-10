@@ -28,7 +28,7 @@ public:
     // Doit être appelé dans loop() — retourne true si une commande est disponible
     // Si true, la commande est stockée dans 'out'
     static bool read(Command& out);
- 
+
 private:
     // Parse une ligne brute en Command
     static Command parse(const String& line);
