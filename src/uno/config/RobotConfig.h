@@ -5,7 +5,7 @@
 #pragma once
 
 // Nombre de servos utilisés dans le robot
-#define SERVO_COUNT 8
+#define SERVO_COUNT 1
 
 // Vitesse de communication série avec l'esp32
 #define SERIAL_BAUDRATE 115200

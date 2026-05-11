@@ -9,7 +9,7 @@
  * SERVOS_HEAD : Nombre de servos utilisés pour la tête
  */
 #define PIN_HEAD 6
-#define SERVOS_HEAD 2
+#define SERVOS_HEAD 1
 
 
 // Left arm

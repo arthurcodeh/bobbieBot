@@ -20,7 +20,21 @@ bool SerialProtocol::read(Command& out) {
 
     if (line.length() == 0) return false;
 
+    Serial.print("[SerialProtocol] Ligne reçue : '");
+    Serial.print(line);
+    Serial.println("'");
+
     out = parse(line);
+    if (!out.valid) {
+        Serial.println("[SerialProtocol] ERREUR : commande invalide ou mal formée");
+    } else {
+        Serial.print("[SerialProtocol] Commande parsée → membre='");
+        Serial.print(out.member);
+        Serial.print("' servoIndex=");
+        Serial.print(out.servoIndex);
+        Serial.print(" angle=");
+        Serial.println(out.angle);
+    }
     return out.valid;
 }
 

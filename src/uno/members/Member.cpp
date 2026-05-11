@@ -35,15 +35,39 @@ const char* Membre::getName() const {
 }
 
 void Membre::setDestination(uint8_t index, int angle) {
-    if (index >= servoCount) return;
+    if (index >= servoCount) {
+        Serial.print("[Membre] ERREUR : index de servo invalide (");
+        Serial.print(index);
+        Serial.print(") pour le membre '");
+        Serial.print(name);
+        Serial.println("'");
+        return;
+    }
 
     ServoSpec& spec = servos[index];
-
+    int angleClampe = angle;
     // Clamp : on force l'angle dans les limites autorisées
-    if (angle < spec.min) angle = spec.min;
-    if (angle > spec.max) angle = spec.max;
+    if (angle < spec.min) angleClampe = spec.min;
+    if (angle > spec.max) angleClampe = spec.max;
 
-    spec.destination = angle;
+    if (angleClampe != angle) {
+        Serial.print("[");
+        Serial.print(name);
+        Serial.print("] AVERTISSEMENT : angle ");
+        Serial.print(angle);
+        Serial.print("° contraint à ");
+        Serial.print(angleClampe);
+        Serial.println("°");
+    }
+
+    spec.destination = angleClampe;
+    Serial.print("[");
+    Serial.print(name);
+    Serial.print("] Servo ");
+    Serial.print(index);
+    Serial.print(" → destination fixée à ");
+    Serial.print(spec.destination);
+    Serial.println("°");
 }
 
 void Membre::move() {
@@ -54,6 +78,7 @@ void Membre::move() {
         if (spec.position == spec.destination) continue;
 
         int diff = spec.destination - spec.position;
+        int anciennePosition = spec.position;
 
         if (abs(diff) <= vitesse) {
             // On est assez proche : on se cale directement sur la cible
@@ -62,7 +87,17 @@ void Membre::move() {
             // On avance d'un pas dans la bonne direction
             spec.position += (diff > 0) ? vitesse : -vitesse;
         }
-
+        Serial.print("[");
+        Serial.print(name);
+        Serial.print("] Servo ");
+        Serial.print(i);
+        Serial.print(" : ");
+        Serial.print(anciennePosition);
+        Serial.print("° → ");
+        Serial.print(spec.position);
+        Serial.print("° (cible : ");
+        Serial.print(spec.destination);
+        Serial.println("°)");
         // Envoi de la nouvelle position au servo physique
         if (spec.servo != nullptr) {
             spec.servo->move(spec.position);

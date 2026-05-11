@@ -16,7 +16,7 @@ std::vector<Membre*> membres;
 
 void setup() {
     // Initialisation série (USB/UART) pour diagnostic et réception de commandes.
-    Serial.begin(115200);
+    Serial.begin(9600);
 
     // Messages de debug côté console série.
     Serial.println("==== MECCANOID - MODE DIAGNOSTIC ====");
