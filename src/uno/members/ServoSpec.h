@@ -1,12 +1,15 @@
 // File: ServoSpec.h
 // Role: Décrit les caractéristiques et l'état d'un servo individuel
 #pragma once
-#include <MeccanoidServo.h>
 
+// Limites mécaniques et état d'un servo
 struct ServoSpec {
-    MeccanoidServo* servo;  // servo réel (fourni par Meccanoid "le servo physique")
-    int min;                // limite min autorisée
-    int max;                // limite max autorisée
-    int position;           // position actuelle (logique)
-    int destination;        // angle cible
+    int min;
+    int max;
+    int position    = 90;
+    int destination = 90;
+
+    // Constructeur pour l'initialisation avec { min, max, pos, dest }
+    ServoSpec(int min, int max, int position = 90, int destination = 90)
+        : min(min), max(max), position(position), destination(destination) {}
 };

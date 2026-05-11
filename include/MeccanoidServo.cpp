@@ -47,10 +47,9 @@ uint8_t MeccanoidServo::getPosition() {
 }
 
 uint8_t MeccanoidServo::buildChecksum(uint8_t *data, size_t len) {
-    uint16_t checksum = 0;
+    uint8_t checksum = 0;
     for (size_t i = 0; i < len; i++) {
-        checksum += data[i];
+        checksum ^= data[i];
     }
-    // simple checksum : sum & 0xFF
     return checksum;
 }

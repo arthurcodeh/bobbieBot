@@ -9,34 +9,32 @@
 #pragma once
 
 #include "ServoSpec.h"
-#include <Meccanoid.h>
+#include <Meccanoid.h>   // ← lib officielle
 #include "../config/RobotConfig.h"
 
-// Nombre maximum de servos par membre
 #define MAX_SERVOS 4
 
 class Membre {
 protected:
     int         pin;
     const char* name;
-    Meccanoid   meccanoid;
-    ServoSpec   servos[MAX_SERVOS];
+    Chain       chain;        // ← Chain de la lib officielle
     uint8_t     servoCount;
+    int         vitesse = SERVO_DEFAULT_SPEED;
 
-    // ✅ Initialisé à nullptr pour éviter un delete sur adresse aléatoire
-    MeccanoidServo* servoInstances[MAX_SERVOS] = { nullptr };
-
-    int vitesse = SERVO_DEFAULT_SPEED;
+    // Specs mécaniques (min, max, position, destination)
+    struct ServoState {
+        int min;
+        int max;
+        int position    = 90;
+        int destination = 90;
+    };
+    ServoState states[MAX_SERVOS];
 
 public:
     Membre(int pin, const char* name, const ServoSpec* specs, uint8_t count);
 
-    // Retourne le nom logique du membre (ex: "head", "left")
     const char* getName() const;
-
-    // Fixe l'angle cible du servo à l'index donné (clampé dans [min, max])
     void setDestination(uint8_t index, int angle);
-
-    // À appeler dans loop() : fait avancer chaque servo d'un pas vers sa destination
     void move();
 };

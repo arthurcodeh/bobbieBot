@@ -1,13 +1,12 @@
 #include "MeccanoidProtocol.h"
 
-MeccanoidProtocol::MeccanoidProtocol(Stream &serial, uint8_t pinData) {
-    _serial = &serial;
+MeccanoidProtocol::MeccanoidProtocol(uint8_t pinData) {
     _pinData = pinData;
 }
 
-void MeccanoidProtocol::begin(unsigned long baud) {
+void MeccanoidProtocol::begin() {
     pinMode(_pinData, OUTPUT);
-    digitalWrite(_pinData, HIGH); // repos = HIGH
+    digitalWrite(_pinData, HIGH); // état repos = HIGH
     delay(100);
 }
 
@@ -18,7 +17,7 @@ void MeccanoidProtocol::sendByte(uint8_t b) {
     digitalWrite(_pinData, LOW);
     delayMicroseconds(BIT_DELAY_US);
 
-    // 8 bits de données, LSB en premier
+    // 8 bits LSB en premier
     for (uint8_t i = 0; i < 8; i++) {
         digitalWrite(_pinData, (b >> i) & 0x01 ? HIGH : LOW);
         delayMicroseconds(BIT_DELAY_US);
@@ -43,7 +42,7 @@ uint8_t MeccanoidProtocol::receiveByte() {
 
 uint8_t MeccanoidProtocol::receiveRawByte() {
     pinMode(_pinData, INPUT);
-    delayMicroseconds(BIT_DELAY_US); // attendre start bit
+    delayMicroseconds(BIT_DELAY_US);
 
     uint8_t result = 0;
     for (uint8_t i = 0; i < 8; i++) {
@@ -52,6 +51,6 @@ uint8_t MeccanoidProtocol::receiveRawByte() {
     }
 
     pinMode(_pinData, OUTPUT);
-    digitalWrite(_pinData, HIGH); // repasser en mode émission
+    digitalWrite(_pinData, HIGH);
     return result;
 }

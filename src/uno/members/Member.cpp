@@ -4,26 +4,15 @@
 #include "Member.h"
 
 Membre::Membre(int pin, const char* name, const ServoSpec* specs, uint8_t count)
-    : pin(pin), name(name), meccanoid(pin), servoCount(count)
+    : pin(pin), name(name), chain(pin), servoCount(count)
 {
-    // Sécurité : on ne dépasse jamais MAX_SERVOS
     if (servoCount > MAX_SERVOS) servoCount = MAX_SERVOS;
 
-    meccanoid.begin(2400);
-
     for (uint8_t i = 0; i < servoCount; i++) {
-        // Copie les specs statiques (min, max, position, destination)
-        servos[i] = specs[i];
-
-        // ✅ servoInstances[i] est déjà nullptr grâce à l'initialisation dans le header.
-        //    On n'appelle jamais delete sur un pointeur non initialisé.
-        MeccanoidServo servo = meccanoid.getServo(i);
-        servoInstances[i]    = new MeccanoidServo(servo);
-        servos[i].servo      = servoInstances[i];
-
-        // Position de départ : centre
-        servos[i].position    = 90;
-        servos[i].destination = 90;
+        states[i].min         = specs[i].min;
+        states[i].max         = specs[i].max;
+        states[i].position    = 90;
+        states[i].destination = 90;
     }
 }
 
@@ -32,76 +21,63 @@ const char* Membre::getName() const {
 }
 
 void Membre::setDestination(uint8_t index, int angle) {
-    if (index >= servoCount) {
-        Serial.print(F("[Membre] ERREUR : index servo invalide ("));
-        Serial.print(index);
-        Serial.print(F(") pour '"));
-        Serial.print(name);
-        Serial.println(F("'"));
-        return;
-    }
+    if (index >= servoCount) return;
 
-    ServoSpec& spec = servos[index];
+    int clamped = angle;
+    if (angle < states[index].min) clamped = states[index].min;
+    if (angle > states[index].max) clamped = states[index].max;
 
-    // Clamp : force l'angle dans les limites mécaniques autorisées
-    int angleClampe = angle;
-    if (angle < spec.min) angleClampe = spec.min;
-    if (angle > spec.max) angleClampe = spec.max;
-
-    if (angleClampe != angle) {
+    if (clamped != angle) {
         Serial.print(F("["));
         Serial.print(name);
         Serial.print(F("] AVERTISSEMENT : angle "));
         Serial.print(angle);
         Serial.print(F("° contraint à "));
-        Serial.print(angleClampe);
+        Serial.print(clamped);
         Serial.println(F("°"));
     }
 
-    spec.destination = angleClampe;
+    states[index].destination = clamped;
 
     Serial.print(F("["));
     Serial.print(name);
     Serial.print(F("] Servo "));
     Serial.print(index);
     Serial.print(F(" → destination fixée à "));
-    Serial.print(spec.destination);
+    Serial.print(clamped);
     Serial.println(F("°"));
 }
 
 void Membre::move() {
     for (uint8_t i = 0; i < servoCount; i++) {
-        ServoSpec& spec = servos[i];
+        ServoState& s = states[i];
 
-        // Rien à faire si déjà à destination
-        if (spec.position == spec.destination) continue;
+        if (s.position == s.destination) continue;
 
-        int diff             = spec.destination - spec.position;
-        int anciennePosition = spec.position;
+        int diff = s.destination - s.position;
+        int old  = s.position;
 
         if (abs(diff) <= vitesse) {
-            // Assez proche : on se cale directement sur la cible
-            spec.position = spec.destination;
+            s.position = s.destination;
         } else {
-            // On avance d'un pas dans la bonne direction
-            spec.position += (diff > 0) ? vitesse : -vitesse;
+            s.position += (diff > 0) ? vitesse : -vitesse;
         }
+
+        chain.getServo(i).setPosition(s.position);
 
         Serial.print(F("["));
         Serial.print(name);
         Serial.print(F("] Servo "));
         Serial.print(i);
         Serial.print(F(" : "));
-        Serial.print(anciennePosition);
+        Serial.print(old);
         Serial.print(F("° → "));
-        Serial.print(spec.position);
+        Serial.print(s.position);
         Serial.print(F("° (cible : "));
-        Serial.print(spec.destination);
+        Serial.print(s.destination);
         Serial.println(F("°)"));
-
-        // Envoi de la nouvelle position au servo physique
-        if (spec.servo != nullptr) {
-            spec.servo->move(spec.position);
-        }
     }
+
+    // toujours appelé — obligatoire pour le protocole SM
+    chain.update();
 }
