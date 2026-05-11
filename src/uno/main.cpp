@@ -18,11 +18,13 @@ MeccanoidController controller;
 void setup() {
     Serial.begin(SERIAL_BEGIN);
     delay(1000);
-
     Serial.println("[main] Arduino démarré ✓");
+
     controller.add_member(&tete);
     controller.add_member(&brasGauche);
     controller.add_member(&brasDroit);
+
+    tete.setDestination(0, 45);
 }
 
 void loop() {
@@ -31,6 +33,8 @@ void loop() {
     tete.move();
     brasGauche.move();
     brasDroit.move();
+
+    tete.setDestination(0, 45);
 
     // Exemple : faire bouger la caméra
     // Décommenter pour tester :

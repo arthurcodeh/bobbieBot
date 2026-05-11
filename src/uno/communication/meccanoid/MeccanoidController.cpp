@@ -18,6 +18,7 @@ void MeccanoidController::update() {
     // Traiter la commande reçue
     for (uint8_t i = 0; i < memberCount; i++) {
         if (strcmp(membres[i]->getName(), cmd.member) == 0) {
+            membres[i]->setDestination(cmd.servoIndex, cmd.angle);
             break; // Commande traitée, sortir de la boucle
         }
     }

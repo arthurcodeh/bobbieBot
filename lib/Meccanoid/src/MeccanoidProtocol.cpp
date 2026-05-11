@@ -1,5 +1,4 @@
 #include "MeccanoidProtocol.h"
-#include <SoftwareSerial.h>
 
 MeccanoidProtocol::MeccanoidProtocol(Stream &serial, uint8_t pinData) {
     _serial = &serial;
@@ -7,52 +6,52 @@ MeccanoidProtocol::MeccanoidProtocol(Stream &serial, uint8_t pinData) {
 }
 
 void MeccanoidProtocol::begin(unsigned long baud) {
-    // Si tu utilises SoftwareSerial, initialize le ici
-    // Par défaut, on suppose que serial est déjà begin()
     pinMode(_pinData, OUTPUT);
-    digitalWrite(_pinData, HIGH);
+    digitalWrite(_pinData, HIGH); // repos = HIGH
+    delay(100);
 }
 
-void MeccanoidProtocol::sendByte(uint8_t bytData) {
+void MeccanoidProtocol::sendByte(uint8_t b) {
     pinMode(_pinData, OUTPUT);
+
+    // Start bit
     digitalWrite(_pinData, LOW);
     delayMicroseconds(BIT_DELAY_US);
 
-    for (uint8_t mask = 1; mask; mask <<= 1) {
-        if (bytData & mask) {
-            digitalWrite(_pinData, HIGH);
-        } else {
-            digitalWrite(_pinData, LOW);
-        }
+    // 8 bits de données, LSB en premier
+    for (uint8_t i = 0; i < 8; i++) {
+        digitalWrite(_pinData, (b >> i) & 0x01 ? HIGH : LOW);
         delayMicroseconds(BIT_DELAY_US);
     }
 
+    // Stop bit
     digitalWrite(_pinData, HIGH);
     delayMicroseconds(BIT_DELAY_US);
-    digitalWrite(_pinData, HIGH);
-    delayMicroseconds(BIT_DELAY_US);
-}
-
-uint8_t MeccanoidProtocol::receiveRawByte() {
-    pinMode(_pinData, INPUT);
-    delay(2); // wait
-
-    uint8_t result = 0;
-    for (uint8_t mask = 1; mask; mask <<= 1) {
-        unsigned long pulse = pulseIn(_pinData, HIGH, 2500);
-        if (pulse > 400) {
-            result |= mask;
-        }
-    }
-    return result;
 }
 
 void MeccanoidProtocol::sendPacket(uint8_t *data, size_t len) {
+    noInterrupts(); // ✅ critique pour le timing
     for (size_t i = 0; i < len; i++) {
         sendByte(data[i]);
     }
+    interrupts();
 }
 
 uint8_t MeccanoidProtocol::receiveByte() {
     return receiveRawByte();
+}
+
+uint8_t MeccanoidProtocol::receiveRawByte() {
+    pinMode(_pinData, INPUT);
+    delayMicroseconds(BIT_DELAY_US); // attendre start bit
+
+    uint8_t result = 0;
+    for (uint8_t i = 0; i < 8; i++) {
+        result |= (digitalRead(_pinData) << i);
+        delayMicroseconds(BIT_DELAY_US);
+    }
+
+    pinMode(_pinData, OUTPUT);
+    digitalWrite(_pinData, HIGH); // repasser en mode émission
+    return result;
 }
