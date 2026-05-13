@@ -25,13 +25,8 @@ void setup() {
     controller.add_member(tete);
     //controller.add_member(brasGauche);
     //controller.add_member(brasDroit);
-    // Test : envoie la position 45° à chaque ID possible
-
 
     Serial.println(F("[main] Membres enregistrés ✓"));
-
-    tete->setDestination(0, 45);
-
 }
 
 void loop() {

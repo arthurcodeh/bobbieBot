@@ -9,4 +9,4 @@ ServoSpec Tete::headSpecs[HEAD_SERVO_COUNT] = {
     //{45,  135,   90,   90 },   // servo 1 : inclinaison verticale
 };
 
-// Head 0 20
+// head 0 20

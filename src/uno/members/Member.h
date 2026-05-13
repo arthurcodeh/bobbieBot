@@ -18,7 +18,7 @@ class Membre {
 protected:
     int         pin;
     const char* name;
-    Chain       chain;        // ← Chain de la lib officielle
+    Chain       chain;
     uint8_t     servoCount;
     int         vitesse = SERVO_DEFAULT_SPEED;
 
@@ -28,6 +28,7 @@ protected:
         int max;
         int position    = 90;
         int destination = 90;
+        bool wasMoving = false;
     };
     ServoState states[MAX_SERVOS];
 
@@ -37,4 +38,7 @@ public:
     const char* getName() const;
     void setDestination(uint8_t index, int angle);
     void move();
+
+private:
+    void updateLED(uint8_t index, bool moving);
 };
