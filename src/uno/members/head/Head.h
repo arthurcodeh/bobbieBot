@@ -1,9 +1,3 @@
-// File: Head.h
-// Role: Représente la tête du robot (2 servos)
-//
-// Servo 0 — rotation horizontale (gauche / droite) : limites [10°, 170°]
-// Servo 1 — inclinaison verticale (haut / bas)     : limites [45°, 135°]
-
 /**
  * @file Head.h
  * @brief Représente la tête du robot (2 servos)
@@ -22,10 +16,15 @@
  */
 
 #pragma once
+
 #include "../Member.h"
 #include "uno/config/Pins.h"
 
+/**
+ * Nombre de servos pour la tête, défini dans RobotConfig.h
+ */
 static const uint8_t HEAD_SERVO_COUNT = SERVOS_HEAD;
+
 
 class Tete : public Membre {
 private:

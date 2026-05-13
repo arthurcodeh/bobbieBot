@@ -62,6 +62,7 @@ void Membre::setDestination(
     if (index >= servoCount) return;
 
     // Contraindre l'angle aux limites mécaniques du servo
+    // (clamping) et avertir si une contrainte a été appliquée (angle maximun que le servo peut atteindre)
     int clamped = angle;
     if (angle < states[index].min) clamped = states[index].min;
     if (angle > states[index].max) clamped = states[index].max;
