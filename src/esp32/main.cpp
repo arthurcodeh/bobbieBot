@@ -1,9 +1,10 @@
 #include <WiFi.h>
 #include <WebServer.h>
 #include <LittleFS.h>
+#include "config/wifi.h"
 
-const char *ssid = "TON_WIFI";
-const char *password = "TON_MDP";
+const char *ssid = WIFI_SSID;
+const char *password = WIFI_PASSWORD;
 
 WebServer server(80);
 
