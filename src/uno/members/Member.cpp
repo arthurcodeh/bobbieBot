@@ -1,10 +1,32 @@
-// File: Member.cpp
-// Role : Implémentation de la classe de base Membre
+/**
+* @file   Member.cpp
+ * @brief  Implémentation de la classe de base Membre.
+ *
+ * Gère l'interpolation de position et le retour visuel LED
+ * pour un ou plusieurs servos Meccanoid chaînés.
+ */
 
 #include "Member.h"
 
-Membre::Membre(int pin, const char* name, const ServoSpec* specs, uint8_t count)
-    : pin(pin), name(name), chain(pin), servoCount(count)
+
+// --- CONSTRUCTEUR ---
+/**
+ * @brief Initialise un membre avec ses servos et leurs limites mécaniques.
+ *
+ * Copie les limites de chaque ServoSpec dans l'état interne ; la position
+ * et la destination de départ sont fixes à 90° (position neutre).
+ *
+ * @param pin Numéro de pin pour la communication avec les servos.
+ * @param name Nom du membre (pour les logs).
+ * @param specs Tableau de spécifications pour chaque servo (min, max).
+ * @param count Nombre de servos dans ce membre (doit être ≤ MAX_SERVOS).
+ */
+Membre::Membre(
+    int                 pin,
+    const char*         name,
+    const ServoSpec*    specs,
+    uint8_t             count
+    ): pin(pin), name(name), chain(pin), servoCount(count)
 {
     if (servoCount > MAX_SERVOS) servoCount = MAX_SERVOS;
 
@@ -16,14 +38,30 @@ Membre::Membre(int pin, const char* name, const ServoSpec* specs, uint8_t count)
         states[i].wasMoving   = false;
     }
 }
-
+// --- MÉTHODES PUBLIQUES ---
+/**@brief Retourne le nom du membre*/
 const char* Membre::getName() const {
     return name;
 }
 
-void Membre::setDestination(uint8_t index, int angle) {
+
+/**
+ * @brief Définit l'angle cible d'un servo, en respectant ses limites mécaniques.
+ *
+ * Si l'angle fourni dépasse les bornes [min, max], il est contraint (clamped)
+ * et un avertissement est émis sur le port série.
+ *
+ * @param index Index du servo dans ce membre (0-based).
+ * @param angle Angle souhaité, en degrés.
+ *
+ * @note Sans effet si index est hors limites.
+ */
+void Membre::setDestination(
+    const uint8_t index,
+    const int     angle) {
     if (index >= servoCount) return;
 
+    // Contraindre l'angle aux limites mécaniques du servo
     int clamped = angle;
     if (angle < states[index].min) clamped = states[index].min;
     if (angle > states[index].max) clamped = states[index].max;
@@ -49,29 +87,22 @@ void Membre::setDestination(uint8_t index, int angle) {
     Serial.println(F("°"));
 }
 
-void Membre::updateLED(uint8_t index, bool moving) {
-    // Chaque servo a sa LED associée au même index dans la chain.
-    // Rouge (7,0,0) = en mouvement — Rouge vif, facilement visible.
-    // Vert  (0,7,0) = au repos     — Vert vif, état nominal.
-    // fadetime = 0 : changement instantané (pas de transition floue).
-    MeccanoServo servo = chain.getServo(index);
-    if (moving) {
-        servo.setColor(1, 0, 0); // Rouge
-    } else {
-        servo.setColor(0, 1, 0); // Vert
-    }
-}
 
+/**
+ * @brief Interpole chaque servo d'un pas vers sa destination.
+ *
+ * Doit être appelé à chaque itération de loop(). Active/désactive
+ * le mode limiteur et la LED en fonction de l'état de mouvement.
+ *
+ * @note La vitesse d'avance est définie par le membre vitesse
+ *       (valeur par défaut : SERVO_DEFAULT_SPEED).
+ */
 void Membre::move() {
     for (uint8_t i = 0; i < servoCount; i++) {
         ServoState& s = states[i];
 
-        // --- Cas 1 : le servo est déjà à sa cible ---
         if (s.position == s.destination) {
-
-            // Si on vient juste d'arriver (transition mouvement → repos),
-            // on met le servo en mode limiteur (économie d'énergie, pas de vibration)
-            // et on repasse la LED au vert.
+            // Transition vers le repos : on active le mode limiteur et on éteint la LED
             if (s.wasMoving) {
                 chain.getServo(i).setLim(true);
                 updateLED(i, false);
@@ -83,14 +114,10 @@ void Membre::move() {
                 Serial.print(i);
                 Serial.println(F(" → cible atteinte, passage au repos ✓"));
             }
-
-            continue; // rien d'autre à faire pour ce servo
+            continue;
         }
 
-        // --- Cas 2 : le servo doit encore bouger ---
-
-        // Au premier tick de mouvement, on sort le servo du mode repos
-        // et on allume la LED en rouge.
+        // Premier tick de mouvement : on désactive le mode limiteur et on allume la LED
         if (!s.wasMoving) {
             chain.getServo(i).setLim(false);
             updateLED(i, true);
@@ -120,5 +147,22 @@ void Membre::move() {
         Serial.print(F("° (cible : "));
         Serial.print(s.destination);
         Serial.println(F("°)"));
+    }
+}
+/**
+ * @brief Met à jour la LED du servo en fonction de son état.
+ *
+ * @param index  Index du servo (et de sa LED dans la chaîne).
+ * @param moving true → LED rouge (en mouvement), false → LED verte (repos).
+ *
+ * @warning La LED est associée au servo par son index dans la chaîne;
+ *          une chaîne mal configurée peut allumer la mauvaise LED.
+ */
+void Membre::updateLED(uint8_t index, bool moving) {
+    MeccanoServo servo = chain.getServo(index);
+    if (moving) {
+        servo.setColor(1, 0, 0); // Rouge
+    } else {
+        servo.setColor(0, 1, 0); // Vert
     }
 }

@@ -1,8 +1,14 @@
-// File: ServoSpec.h
-// Role: Décrit les caractéristiques et l'état d'un servo individuel
+/**
+ * @file ServoSpec.h
+ * @brief Spécification d'un servo : limites mécaniques, position actuelle et destination.
+ *
+ * Ce struct est utilisé pour stocker les informations de chaque servo, notamment les limites mécaniques (min et max),
+ * la position actuelle et la destination souhaitée. Il peut être initialisé avec des valeurs par défaut ou personnalisées.
+ */
+
 #pragma once
 
-// Limites mécaniques et état d'un servo
+
 struct ServoSpec {
     int min;
     int max;

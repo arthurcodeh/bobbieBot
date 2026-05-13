@@ -4,6 +4,23 @@
 // Servo 0 — rotation horizontale (gauche / droite) : limites [10°, 170°]
 // Servo 1 — inclinaison verticale (haut / bas)     : limites [45°, 135°]
 
+/**
+ * @file Head.h
+ * @brief Représente la tête du robot (2 servos)
+ *
+ * Servo 0 — rotation horizontale (gauche / droite) : limites [10°, 170°]
+ * Servo 1 — inclinaison verticale (haut / bas)     : limites [45°, 135°]
+ *
+ * La classe Tete hérite de Membre, qui gère la communication avec les servos et les limites mécaniques.
+ * Tete fournit des méthodes spécifiques pour contrôler les mouvements de la tête de manière plus intuitive
+ * (ex: tournerGauche(30) au lieu de setDestination(0, 30)).
+ *
+ * @param pin Le numéro de pin pour la communication avec les servos de la tête
+ *
+ * @see Membre
+ * @see ServoSpec
+ */
+
 #pragma once
 #include "../Member.h"
 #include "uno/config/Pins.h"

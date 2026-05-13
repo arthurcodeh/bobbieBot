@@ -14,3 +14,4 @@
 // --- Servos ---
 // Vitesse d'interpolation par défaut (degrés par tick de loop)
 #define SERVO_DEFAULT_SPEED 5
+#define SERVOS_MAX_COUNT 3
