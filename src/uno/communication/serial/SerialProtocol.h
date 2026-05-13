@@ -1,14 +1,20 @@
-// File: SerialProtocol.h
-// Role: Parser les commandes texte reçues depuis l'ESP32 via le port série
-//
-// Protocole ex :
-//   "head 0 120"  → membre "head", servo index 0, angle 120°
-//   "led red"     → LED couleur rouge
-//   "led off"     → LED éteinte
-//
-// Chaque commande est terminée par un saut de ligne '\n'
- 
+/**
+ * @file SerialProtocol.h
+ * @brief Déclaration de la classe SerialProtocol pour parser les commandes série.
+ *
+ * Cette classe lit les lignes de texte envoyées par l'ESP32 via le port série,
+ * les parse en commandes structurées (Command) et fournit une interface simple
+ * pour vérifier la validité des commandes et accéder à leurs paramètres.
+ *
+ * Protocole de commande :
+ *   - Commande servo : "head 0 120" → membre "head", servo index 0, angle 120°
+ *   - Commande LED : "led red" → LED rouge / "led off" → LED éteinte
+ *
+ * Chaque commande doit être terminée par un saut de ligne '\n' (envoyé par println).
+ */
+
 #pragma once
+
 #include <Arduino.h>
  
 // Représente une commande parsée, prête à être exécutée

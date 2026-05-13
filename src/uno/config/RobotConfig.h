@@ -4,6 +4,8 @@
 
 #pragma once
 
+#define MAX_MEMBERS_COUNT 10
+
 // --- Communication série ---
 // Baudrate utilisé pour le moniteur série (debug USB)
 #define SERIAL_BAUD_MONITOR 9600

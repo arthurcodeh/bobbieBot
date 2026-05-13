@@ -1,9 +1,17 @@
-// File : SerialProtocol.cpp
-// Role: Communication entre l'arduino et l'esp 32
-
-// Description : SerialProtocol sert à gérer la communication entre l'arduino et l'esp32,
-// qui transmet les données à l'arduino pour le contrôle du robot
-
+/**
+ * @file SerialProtocol.cpp
+ * @brief Implémentation de la classe SerialProtocol pour parser les commandes série.
+ *
+ * Cette classe lit les lignes de texte envoyées par l'ESP32 via le port série,
+ * les parse en commandes structurées (Command) et fournit une interface simple
+ * pour vérifier la validité des commandes et accéder à leurs paramètres.
+ *
+ * Protocole de commande :
+ *   - Commande servo : "head 0 120" → membre "head", servo index 0, angle 120°
+ *   - Commande LED : "led red" → LED rouge / "led off" → LED éteinte
+ *
+ * Chaque commande doit être terminée par un saut de ligne '\n' (envoyé par println).
+ */
 
 #include "SerialProtocol.h"
 

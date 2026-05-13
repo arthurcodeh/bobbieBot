@@ -1,3 +1,11 @@
+/**
+ * @file MeccanoidController.cpp
+ * @brief Implémentation de la classe MeccanoidController pour gérer les membres et traiter les commandes.
+ *
+ * Cette classe permet d'ajouter des membres (Membre) et de mettre à jour leurs positions en fonction
+ * des commandes reçues via le protocole série.
+ */
+
 #include "MeccanoidController.h"
 #include <string.h>
 

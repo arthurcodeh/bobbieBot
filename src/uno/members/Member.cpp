@@ -22,10 +22,10 @@
  * @param count Nombre de servos dans ce membre (doit être ≤ MAX_SERVOS).
  */
 Membre::Membre(
-    int                 pin,
-    const char*         name,
-    const ServoSpec*    specs,
-    uint8_t             count
+    int                 pin,    // Pin de communication pour les servos
+    const char*         name,   // Nom du membre pour les logs
+    const ServoSpec*    specs,  // Tableau de specs pour chaque servo (min, max)
+    uint8_t             count   // Nombre de servos dans ce membre
     ): pin(pin), name(name), chain(pin), servoCount(count)
 {
     if (servoCount > MAX_SERVOS) servoCount = MAX_SERVOS;
