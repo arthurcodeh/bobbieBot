@@ -18,17 +18,26 @@
 #include "SerialProtocol.h"
 
 void SerialProtocol::begin(unsigned long baudRate) {
-    Serial.begin(baudRate);
+    Serial1.begin(baudRate);
+    Serial.println(F("[SerialProtocol] Initialisé — écoute Serial (debug) + Serial1 (ESP32) ✓"));
 }
 
 bool SerialProtocol::read(Command& out) {
-    // Lire sur Serial1 (ESP32)
-    if (!Serial1.available()) return false;
+    String line = "";
 
-    // Lire jusqu'au saut de ligne (envoyé par l'ESP32 avec println)
-    String line = Serial1.readStringUntil('\n');
+    // --- ESP32 via Serial1 ---
+    if (Serial1.available()) {
+        line = Serial1.readStringUntil('\n');
+    }
+    // --- debug manuel via moniteur série ---
+    else if (Serial.available()) {
+        line = Serial.readStringUntil('\n');
+    }
+    else {
+        return false; // rien à lire sur aucun des deux ports
+    }
+
     line.trim(); // supprime \r et espaces superflus
-
     if (line.length() == 0) return false;
 
     Serial.print("[SerialProtocol] Ligne reçue : '");
