@@ -38,7 +38,7 @@ public:
             pin,
             side,
             (strcmp(side, "left") == 0) ? leftSpecs : rightSpecs,
-            RIGHT_SERVO_COUNT
+            (strcmp(side, "left") == 0) ? LEFT_SERVO_COUNT : RIGHT_SERVO_COUNT
         ) {}
 
 private:

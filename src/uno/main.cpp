@@ -6,6 +6,7 @@
  */
 
 #include "members/head/Head.h"
+#include "members/head/eyes/eyes.h"
 #include "members/arm/Arm.h"
 #include "communication/meccanoid/MeccanoidController.h"
 #include "config/Pins.h"
@@ -15,6 +16,7 @@
  * Pointeurs vers les membres du robot. Initialisés dans setup() après la configuration de la communication.
  */
 Tete* tete         = nullptr;
+Yeux* yeux         = nullptr;
 Bras* brasGauche   = nullptr;
 Bras* brasDroit    = nullptr;
 
@@ -34,10 +36,12 @@ void setup() {
     Serial.println(F("[main] Arduino démarré ✓"));
 
     tete       = new Tete(PIN_HEAD);
+    yeux       = new Yeux(HEAD_LED_PIN);
     //brasGauche = new Bras(PIN_ARM_LEFT,  "left");
     //brasDroit = new Bras(PIN_ARM_RIGHT, "right");
 
     controller.add_member(tete);
+    controller.add_member(yeux);
     //controller.add_member(brasGauche);
     //controller.add_member(brasDroit);
 

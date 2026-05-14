@@ -1,16 +1,18 @@
 /**
  * @file SerialProtocol.cpp
- * @brief Implémentation de la classe SerialProtocol pour parser les commandes série.
+ * @brief Implémentation du parser de commandes série.
  *
- * Cette classe lit les lignes de texte envoyées par l'ESP32 via le port série,
- * les parse en commandes structurées (Command) et fournit une interface simple
- * pour vérifier la validité des commandes et accéder à leurs paramètres.
+ * Protocole de commande attendu (envoyé par l'ESP32) :
+ *   - Servo : "head 0 120"  → membre "head", servo 0, angle 120°
+ *   - LED   : "led red"     → action "red" pour le membre "led"
  *
- * Protocole de commande :
- *   - Commande servo : "head 0 120" → membre "head", servo index 0, angle 120°
- *   - Commande LED : "led red" → LED rouge / "led off" → LED éteinte
+ * Ports série utilisés :
+ *   - Serial  → debug USB (moniteur série du PC)
+ *   - Serial1 → communication avec l'ESP32 (RX1/TX1 de l'Arduino)
  *
- * Chaque commande doit être terminée par un saut de ligne '\n' (envoyé par println).
+ * @note Sur Arduino Uno, Serial1 n'est pas disponible nativement.
+ *       Utiliser un SoftwareSerial sur les pins définis dans Pins.h,
+ *       ou un Arduino Mega qui expose Serial1 en hardware.
  */
 
 #include "SerialProtocol.h"
@@ -20,10 +22,11 @@ void SerialProtocol::begin(unsigned long baudRate) {
 }
 
 bool SerialProtocol::read(Command& out) {
-    if (!Serial.available()) return false;
+    // Lire sur Serial1 (ESP32)
+    if (!Serial1.available()) return false;
 
     // Lire jusqu'au saut de ligne (envoyé par l'ESP32 avec println)
-    String line = Serial.readStringUntil('\n');
+    String line = Serial1.readStringUntil('\n');
     line.trim(); // supprime \r et espaces superflus
 
     if (line.length() == 0) return false;
@@ -33,6 +36,7 @@ bool SerialProtocol::read(Command& out) {
     Serial.println("'");
 
     out = parse(line);
+
     if (!out.valid) {
         Serial.println("[SerialProtocol] ERREUR : commande invalide ou mal formée");
     } else {
@@ -53,7 +57,7 @@ Command SerialProtocol::parse(const String& line) {
     cmd.angle      = -1;
     cmd.action[0]  = '\0';
 
-    // Trouver le premier espace → sépare le nom du membre du reste
+    //sépare le nom du membre du reste
     int firstSpace = line.indexOf(' ');
     if (firstSpace == -1) return cmd; // commande incomplète
 
@@ -84,4 +88,4 @@ Command SerialProtocol::parse(const String& line) {
     cmd.valid      = true;
 
     return cmd;
-} // SerialProtocol
+}

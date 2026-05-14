@@ -38,10 +38,10 @@ public:
 
     // --- Raccourcis (simplifie les choses) ---
     // tournerGauche(30) => setDestination(0, 30)
-
-    void tournerGauche(int angle)   { setDestination(0, angle); }
-    void tournerDroite(int angle)   { setDestination(0, angle); }
-    void inclinerHaut(int angle)    { setDestination(1, angle); }
-    void inclinerBas(int angle)     { setDestination(1, angle); }
+    // angles => degrés d'écart par rapport à la position centrée (90°)
+    void tournerGauche(int angle)   { setDestination(0, 90 + angle); }
+    void tournerDroite(int angle)   { setDestination(0, 90 - angle); }
+    void inclinerHaut(int angle)    { setDestination(1, 90 - angle); }
+    void inclinerBas(int angle)     { setDestination(1, 90 + angle); }
     void centrer()                  { setDestination(0, 90); setDestination(1, 90); }
 };

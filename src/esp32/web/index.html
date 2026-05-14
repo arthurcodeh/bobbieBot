@@ -75,77 +75,93 @@
 
 <h1>🤖 Meccanoid – Control Panel</h1>
 
-<!-- TÊTE -->
+<!-- TÊTE
+     Protocole : "head <servoIndex> <angle>"
+     Servo 0 → rotation horizontale [10°, 170°]
+     Servo 1 → inclinaison verticale [45°, 135°]
+-->
 <div class="section">
     <h2>Tête</h2>
 
     <div class="buttons">
-        <button onclick="sendCmd('/head/left')">← Gauche</button>
-        <button onclick="sendCmd('/head/right')">→ Droite</button>
-        <button onclick="sendCmd('/head/up')">↑ Haut</button>
-        <button onclick="sendCmd('/head/down')">↓ Bas</button>
-        <button onclick="sendCmd('/head/center')">⦿ Centre</button>
+        <button onclick="sendCmd('head 0 60')">← Gauche</button>
+        <button onclick="sendCmd('head 0 120')">→ Droite</button>
+        <button onclick="sendCmd('head 1 60')">↑ Haut</button>
+        <button onclick="sendCmd('head 1 120')">↓ Bas</button>
+        <button onclick="sendCmd('head 0 90'); sendCmd('head 1 90')">⦿ Centre</button>
     </div>
 
     <div class="slider-group">
-        <label>Rotation (servo 0)</label>
+        <label>Rotation (servo 0) — horizontal</label>
         <input type="range" min="10" max="170" value="90"
-               oninput="sendSlider('/head/servo/0', this.value)">
+               oninput="sendCmd('head 0 ' + this.value)">
     </div>
 
     <div class="slider-group">
-        <label>Inclinaison (servo 1)</label>
+        <label>Inclinaison (servo 1) — vertical</label>
         <input type="range" min="45" max="135" value="90"
-               oninput="sendSlider('/head/servo/1', this.value)">
+               oninput="sendCmd('head 1 ' + this.value)">
     </div>
 </div>
 
-<!-- BRAS GAUCHE -->
+<!-- BRAS GAUCHE
+     Protocole : "left <servoIndex> <angle>"
+     Servo 0 → épaule [10°, 170°]
+     Servo 1 → coude  [10°, 180°]
+     Servo 2 → pince  [0°,  90°]
+-->
 <div class="section">
     <h2>Bras gauche</h2>
 
     <div class="buttons">
-        <button onclick="sendCmd('/left/up')">Lever</button>
-        <button onclick="sendCmd('/left/down')">Baisser</button>
-        <button onclick="sendCmd('/left/open')">Ouvrir</button>
-        <button onclick="sendCmd('/left/close')">Fermer</button>
+        <button onclick="sendCmd('left 0 150')">Lever</button>
+        <button onclick="sendCmd('left 0 30')">Baisser</button>
+        <button onclick="sendCmd('left 2 0')">Ouvrir</button>
+        <button onclick="sendCmd('left 2 90')">Fermer</button>
     </div>
 </div>
 
-<!-- BRAS DROIT -->
+<!-- BRAS DROIT
+     Protocole : "right <servoIndex> <angle>"
+     Servo 0 → épaule [10°, 170°]
+     Servo 1 → coude  [10°, 180°]
+     Servo 2 → pince  [90°, 180°] (symétrique du gauche)
+-->
 <div class="section">
     <h2>Bras droit</h2>
 
     <div class="buttons">
-        <button onclick="sendCmd('/right/up')">Lever</button>
-        <button onclick="sendCmd('/right/down')">Baisser</button>
-        <button onclick="sendCmd('/right/open')">Ouvrir</button>
-        <button onclick="sendCmd('/right/close')">Fermer</button>
+        <button onclick="sendCmd('right 0 150')">Lever</button>
+        <button onclick="sendCmd('right 0 30')">Baisser</button>
+        <button onclick="sendCmd('right 2 180')">Ouvrir</button>
+        <button onclick="sendCmd('right 2 90')">Fermer</button>
     </div>
 </div>
 
-<!-- ACTIONS GLOBALES -->
+<!-- ACTIONS GLOBALES
+     Remet tous les membres en position neutre (90°).
+-->
 <div class="section">
     <h2>Actions globales</h2>
 
     <div class="buttons">
-        <button onclick="sendCmd('/robot/home')">Position neutre</button>
-        <button onclick="sendCmd('/robot/stop')">STOP</button>
-        <button onclick="sendCmd('/robot/demo')">Démo</button>
+        <button onclick="resetAll()">Position neutre</button>
     </div>
 </div>
 
-<!-- YEUX -->
+<!-- YEUX
+     Protocole : "eyes <action>"
+     Actions disponibles : off, white, red, green, blue
+-->
 <div class="section">
     <h2>Yeux</h2>
 
     <div class="buttons">
-        <button onclick="sendCmd('/eyes/off')">Éteints</button>
-        <button onclick="sendCmd('/eyes/white')">Blanc</button>
-        <button onclick="sendCmd('/eyes/red')">Rouge</button>
-        <button onclick="sendCmd('/eyes/green')">Vert</button>
-        <button onclick="sendCmd('/eyes/blue')">Bleu</button>
-        <button onclick="sendCmd('/eyes/rainbow')">Arc-en-ciel</button>
+        <button onclick="sendCmd('eyes off')">Éteints</button>
+        <button onclick="sendCmd('eyes white')">Blanc</button>
+        <button onclick="sendCmd('eyes red')">Rouge</button>
+        <button onclick="sendCmd('eyes green')">Vert</button>
+        <button onclick="sendCmd('eyes blue')">Bleu</button>
     </div>
 </div>
 
@@ -155,20 +171,35 @@
 </div>
 
 <script>
-    function sendCmd(url) {
-        fetch(url)
-            .then(() => updateStatus("Commande envoyée : " + url))
-            .catch(() => updateStatus("Erreur ESP32"));
+    /**
+     * Envoie une commande au firmware ESP32 via la route /cmd?value=...
+     * Le firmware transmet ensuite la valeur à l'Arduino via Serial.
+     *
+     * @param {string} value - Commande texte (ex: "head 0 90", "eyes red")
+     */
+    function sendCmd(value) {
+        fetch('/cmd?value=' + encodeURIComponent(value))
+            .then(() => updateStatus("Commande envoyée : " + value))
+            .catch(() => updateStatus("Erreur : ESP32 injoignable"));
     }
 
-    function sendSlider(baseUrl, value) {
-        fetch(baseUrl + "/" + value)
-            .then(() => updateStatus(baseUrl + " → " + value))
-            .catch(() => updateStatus("Erreur slider"));
+    /**
+     * Remet tous les membres en position neutre.
+     * Envoie une commande par servo pour garantir l'ordre d'exécution.
+     */
+    function resetAll() {
+        ['head 0 90', 'head 1 90',
+            'left 0 90', 'left 1 90', 'left 2 45',
+            'right 0 90', 'right 1 90', 'right 2 135'
+        ].forEach(cmd => sendCmd(cmd));
     }
 
+    /**
+     * Met à jour la barre de statut visible en bas de page.
+     * @param {string} text - Message à afficher.
+     */
     function updateStatus(text) {
-        document.getElementById("status").innerText = "Statut : " + text;
+        document.getElementById('status').innerText = 'Statut : ' + text;
     }
 </script>
 

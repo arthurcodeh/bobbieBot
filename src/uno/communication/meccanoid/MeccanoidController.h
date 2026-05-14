@@ -19,6 +19,7 @@
 #pragma once
 
 #include "../../members/Member.h"
+#include "../../members/head/eyes/eyes.h"
 #include "../serial/SerialProtocol.h"
 #include "../../config/RobotConfig.h"
 
@@ -28,6 +29,7 @@ class MeccanoidController {
 private:
     Membre* membres[MAX_MEMBERS];
     uint8_t memberCount = 0;
+    void dispatchEyes(Yeux* yeux, const char* action);
 
 public:
     void add_member(Membre* m);
