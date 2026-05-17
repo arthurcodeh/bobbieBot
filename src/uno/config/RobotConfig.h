@@ -1,19 +1,15 @@
-// File: RobotConfig.h
-// Role : Configuration générale du robot
-// Description : Constantes globales partagées par tous les modules du programme Arduino.
-
+/**
+* @file RobotConfig.h
+ * @brief Constantes globales partagées par tous les modules Arduino.
+ */
 #pragma once
 
-#define MAX_MEMBERS_COUNT 10
+#define MAX_MEMBERS_COUNT 10 // Nombre maximum de membres enregistrable dans le robot (tête, bras, jambes, etc.)
 
 // --- Communication série ---
-// Baudrate utilisé pour le moniteur série (debug USB)
-#define SERIAL_BAUD_MONITOR 9600
-
-// Baudrate utilisé pour la communication avec l'ESP32 (via Serial2 côté ESP)
-#define SERIAL_BAUD_ESP32   115200
+#define SERIAL_BAUD_MONITOR 9600 // Baudrate utilisé pour le moniteur série (debug USB/PC)
+#define SERIAL_BAUD_ESP32   9600 //// Baudrate utilisé pour la communication avec l'ESP32 (via Serial2 côté ESP)
 
 // --- Servos ---
-// Vitesse d'interpolation par défaut (degrés par tick de loop)
-#define SERVO_DEFAULT_SPEED 5
-#define SERVOS_MAX_COUNT 3
+#define SERVO_DEFAULT_SPEED 5 // Vitesse d'interpolation par défaut (degrés par tick de loop)
+#define SERVOS_MAX_COUNT 3 // Nombre maximum de servos par membre

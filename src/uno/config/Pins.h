@@ -1,6 +1,10 @@
-// File: Pins.h
-// Role : Définition des pins utilisés pour les servos, LED et moteur
-// Description : Ce fichier contient les définitions des pins utilisés pour les servos, LED et moteur du robot
+/**
+* @file Pins.h
+ * @brief Définition des pins matériels du robot.
+ *
+ * Centralise toutes les assignations de pins pour faciliter
+ * les modifications hardware sans toucher au reste du code.
+ */
 #pragma once
 
 // Head
@@ -9,7 +13,7 @@
  * SERVOS_HEAD : Nombre de servos utilisés pour la tête
  */
 #define PIN_HEAD 6
-#define SERVOS_HEAD 1
+#define SERVOS_HEAD 2
 
 
 // Left arm
@@ -37,3 +41,7 @@
  */
 #define HEAD_LED_PIN 10
 #define FOOTER_MOTOR_PIN 11
+
+// Communication ESP32 (SoftwareSerial — Arduino Uno)
+#define RX_ESP32 2   // Reçoit depuis TX de l'ESP32
+#define TX_ESP32 3   // Émet vers RX de l'ESP32

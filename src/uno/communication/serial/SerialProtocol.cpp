@@ -17,23 +17,23 @@
 
 #include "SerialProtocol.h"
 
-void SerialProtocol::begin(unsigned long baudRate) {
-    Serial1.begin(baudRate);
+// Instanciation du SoftwareSerial pour l'ESP32 (Arduino Uno) sur les pins définis dans Pins.h
+SoftwareSerial SerialProtocol::espSerial(RX_ESP32,TX_ESP32);
+
+void SerialProtocol::begin() {
+    espSerial.begin(SERIAL_BAUD_ESP32);
     Serial.println(F("[SerialProtocol] Initialisé — écoute Serial (debug) + Serial1 (ESP32) ✓"));
 }
 
 bool SerialProtocol::read(Command& out) {
     String line = "";
 
-    // --- ESP32 via Serial1 ---
-    if (Serial1.available()) {
-        line = Serial1.readStringUntil('\n');
-    }
-    // --- debug manuel via moniteur série ---
-    else if (Serial.available()) {
+    // Priorité à l'ESP32 (Serial1) pour éviter de mélanger les commandes debug et ESP32
+    if (espSerial.available()) {
         line = Serial.readStringUntil('\n');
-    }
-    else {
+    } else if (Serial.available()) {
+        line = Serial.readStringUntil('\n');
+    } else {
         return false; // rien à lire sur aucun des deux ports
     }
 
@@ -48,15 +48,24 @@ bool SerialProtocol::read(Command& out) {
 
     if (!out.valid) {
         Serial.println("[SerialProtocol] ERREUR : commande invalide ou mal formée");
-    } else {
-        Serial.print("[SerialProtocol] Commande parsée → membre='");
-        Serial.print(out.member);
-        Serial.print("' servoIndex=");
-        Serial.print(out.servoIndex);
-        Serial.print(" angle=");
-        Serial.println(out.angle);
+        return false;
     }
-    return out.valid;
+
+    // Log différencié selon le type de commande reçue
+    Serial.print(F("[SerialProtocol] Parsé → membre='"));
+    Serial.print(out.member);
+    if (out.action[0] != '\0') {
+        Serial.print(F("' action='"));
+        Serial.print(out.action);
+    } else {
+        Serial.print(F("' servo="));
+        Serial.print(out.servoIndex);
+        Serial.print(F(" angle="));
+        Serial.print(out.angle);
+    }
+    Serial.println(F("'"));
+
+    return true;
 }
 
 Command SerialProtocol::parse(const String& line) {
@@ -65,10 +74,11 @@ Command SerialProtocol::parse(const String& line) {
     cmd.servoIndex = -1;
     cmd.angle      = -1;
     cmd.action[0]  = '\0';
+    cmd.member[0]  = '\0';
 
     //sépare le nom du membre du reste
     int firstSpace = line.indexOf(' ');
-    if (firstSpace == -1) return cmd; // commande incomplète
+    if (firstSpace == -1) return cmd; // SI aucun espace => commande incomplète
 
     // Extraire le nom du membre ("head", "led", ...)
     String memberStr = line.substring(0, firstSpace);
@@ -76,21 +86,24 @@ Command SerialProtocol::parse(const String& line) {
 
     String rest = line.substring(firstSpace + 1);
     rest.trim();
+    if (rest.length() == 0) return cmd; // Rien après le nom du membre
 
-    // --- Commande LED : "led red" / "led off" ---
-    if (memberStr == "led") {
-        if (rest.length() == 0) return cmd;
+    // --- Commande action : "eyes red" / "eyes off" ---
+    // Un seul token restant = pas de servo index ni d'angle
+    if (rest.indexOf(' ') == -1) {
         rest.toCharArray(cmd.action, sizeof(cmd.action));
         cmd.valid = true;
         return cmd;
     }
 
+
     // --- Commande servo : "head 0 120" ---
     int secondSpace = rest.indexOf(' ');
-    if (secondSpace == -1) return cmd; // il manque l'angle
-
     String indexStr = rest.substring(0, secondSpace);
     String angleStr = rest.substring(secondSpace + 1);
+    angleStr.trim();
+
+    if (angleStr.length() == 0) return cmd; // Angle manquant
 
     cmd.servoIndex = indexStr.toInt();
     cmd.angle      = angleStr.toInt();

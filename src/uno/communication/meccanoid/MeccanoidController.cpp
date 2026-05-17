@@ -21,23 +21,23 @@ void MeccanoidController::update() {
     // rien faire si aucune commande reçue
     if (!SerialProtocol::read(cmd)) return;
 
-    // Traiter la commande reçue
+    // Recherche du membre correspondant au nom de la commande
     for (uint8_t i = 0; i < memberCount; i++) {
         // Vérifier si le nom du membre correspond à la commande
         if (strcmp(membres[i]->getName(), cmd.member) != 0) continue;
 
         // --- Commande LED (ex: "led red") ---
-        if (strcmp(cmd.member, "eyes") == 0) {
+        if (cmd.action[0] != '\0') {
             // Cast sûr : on sait que le membre "eyes" est une instance de Yeux
             Yeux* yeux = static_cast<Yeux*>(membres[i]);
             dispatchEyes(yeux, cmd.action);
-            break;
         }
         // --- Commande servo (ex: "head 0 120") ---
-        if (strcmp(membres[i]->getName(), cmd.member) == 0) {
+        else {
             membres[i]->setDestination(cmd.servoIndex, cmd.angle);
-            break;
         }
+
+        break; // membre trouvé et commandé, sortir de la boucle
     }
 }
 
@@ -56,5 +56,6 @@ void MeccanoidController::dispatchEyes(Yeux* yeux, const char* action) {
     else {
         Serial.print(F("[Controller] Action LED inconnue : "));
         Serial.println(action);
+        Serial.println(F("'"));
     }
 }

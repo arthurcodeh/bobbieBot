@@ -26,12 +26,31 @@
 #define MAX_MEMBERS MAX_MEMBERS_COUNT
 
 class MeccanoidController {
+
+public:
+    /**
+    * @brief Enregistre un membre dans le contrôleur.
+    *        Doit être appelé dans setup() pour chaque membre actif.
+    *
+    * @param m Pointeur vers le membre à enregistrer.
+    */
+    void add_member(Membre* m);
+
+    /**
+     * @brief Lit les commandes disponibles et les dispatche vers les membres.
+     *        Doit être appelé à chaque itération de loop().
+     */
+    void update();
+
 private:
     Membre* membres[MAX_MEMBERS];
     uint8_t memberCount = 0;
-    void dispatchEyes(Yeux* yeux, const char* action);
 
-public:
-    void add_member(Membre* m);
-    void update();
+    /**
+     * @brief Traduit une action textuelle en appel de méthode sur Yeux.
+     *
+     * @param yeux   Pointeur vers le membre yeux.
+     * @param action Nom de l'action : "off", "white", "red", "green", "blue".
+     */
+    void dispatchEyes(Yeux* yeux, const char* action);
 };

@@ -18,5 +18,5 @@
 //  servo*   min   max   position  destination
 ServoSpec Tete::headSpecs[HEAD_SERVO_COUNT] = {
     { 10, 170, 90, 90 },    // servo 0 : rotation horizontale
-    //{45,  135,   90,   90 },   // servo 1 : inclinaison verticale
+    {45,  135,   90,   90 },   // servo 1 : inclinaison verticale
 };
