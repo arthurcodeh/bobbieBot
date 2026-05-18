@@ -1,2 +1,3 @@
 .pio
 .idea
+src/esp32/config/wifi.h // This file contains sensitive information such as WiFi credentials and should not be committed to version control.
