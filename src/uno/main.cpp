@@ -40,6 +40,9 @@ void setup() {
     //brasGauche = new Bras(PIN_ARM_LEFT,  "left");
     //brasDroit = new Bras(PIN_ARM_RIGHT, "right");
 
+    tete->begin();
+    yeux->begin();
+
     controller.add_member(tete);
     controller.add_member(yeux);
     //controller.add_member(brasGauche);

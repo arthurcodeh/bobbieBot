@@ -1,0 +1,15 @@
+/**
+ * @file   wifi.h.example
+ * @brief  Configuration WiFi pour l'ESP32 — TEMPLATE SANS SECRETS.
+ *
+ * Utilisation :
+ *   1. Copier ce fichier : cp wifi.h.example wifi.h
+ *   2. Remplir WIFI_SSID et WIFI_PASSWORD avec vos vraies valeurs.
+ *   3. Ne jamais committer wifi.h dans git (vérifié par .gitignore).
+ *
+ * @warning wifi.h est dans .gitignore — ne pas l'enlever.
+ */
+#pragma once
+
+#define WIFI_SSID     "VOTRE_SSID"
+#define WIFI_PASSWORD "VOTRE_MOT_DE_PASSE"

@@ -1,0 +1,364 @@
+/* ── Variables ─────────────────────────────────────────────── */
+:root {
+    --bg:       #0a0c0e;
+    --bg-panel: #0f1215;
+    --bg-card:  #141820;
+    --border:   #1e2530;
+    --amber:    #f0a500;
+    --amber-dim:#7a5200;
+    --red:      #e04040;
+    --green:    #2ecc71;
+    --blue:     #3b9ede;
+    --text:     #c8d0dc;
+    --text-dim: #4a5568;
+    --mono:     'Share Tech Mono', monospace;
+    --display:  'Orbitron', monospace;
+}
+
+/* ── Reset ──────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: var(--mono);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* ── Scanline overlay ───────────────────────────────────────── */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+/* ── Header ─────────────────────────────────────────────────── */
+header {
+    border-bottom: 1px solid var(--border);
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-panel);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo {
+    font-family: var(--display);
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    color: var(--amber);
+    text-shadow: 0 0 20px rgba(240,165,0,0.4);
+}
+
+.logo span {
+    color: var(--text-dim);
+    font-weight: 400;
+}
+
+.header-status {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+}
+
+.connection-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--text-dim);
+    transition: background 0.3s;
+}
+
+.dot.online  { background: var(--green); box-shadow: 0 0 6px var(--green); animation: pulse 2s infinite; }
+.dot.offline { background: var(--red);   box-shadow: 0 0 6px var(--red); }
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.4; }
+}
+
+/* ── Main layout ─────────────────────────────────────────────── */
+main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 28px 20px 60px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.full-width { grid-column: 1 / -1; }
+
+/* ── Panel card ──────────────────────────────────────────────── */
+.panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+
+/* accent bar top */
+.panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent, var(--amber));
+    opacity: 0.7;
+}
+
+.panel-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.panel-title {
+    font-family: var(--display);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: var(--amber);
+    text-transform: uppercase;
+}
+
+.panel-label {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--text-dim);
+}
+
+.panel-body {
+    padding: 16px;
+}
+
+/* ── Buttons ─────────────────────────────────────────────────── */
+.btn-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.btn {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    padding: 8px 14px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    background: var(--bg-panel);
+    color: var(--text);
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s, background 0.15s, box-shadow 0.15s;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--amber);
+    opacity: 0;
+    transition: opacity 0.1s;
+}
+
+.btn:active::after { opacity: 0.08; }
+
+.btn:hover {
+    border-color: var(--amber-dim);
+    color: var(--amber);
+    box-shadow: 0 0 10px rgba(240,165,0,0.1);
+}
+
+.btn.primary {
+    border-color: var(--amber-dim);
+    color: var(--amber);
+    background: rgba(240,165,0,0.06);
+}
+
+.btn.primary:hover {
+    background: rgba(240,165,0,0.14);
+    box-shadow: 0 0 16px rgba(240,165,0,0.2);
+}
+
+.btn.danger {
+    border-color: #3a1a1a;
+    color: #906060;
+}
+
+.btn.danger:hover {
+    border-color: var(--red);
+    color: var(--red);
+    box-shadow: 0 0 10px rgba(224,64,64,0.15);
+}
+
+/* ── LED colour buttons ──────────────────────────────────────── */
+.eye-btn {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    padding: 8px 18px;
+    border: 1px solid;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: transparent;
+}
+
+.eye-btn.off    { border-color: var(--text-dim); color: var(--text-dim); }
+.eye-btn.white  { border-color: #555; color: #ddd; }
+.eye-btn.red    { border-color: #7a2020; color: #e04040; }
+.eye-btn.green  { border-color: #1a5c35; color: #2ecc71; }
+.eye-btn.blue   { border-color: #1a3d6e; color: #3b9ede; }
+
+.eye-btn:hover {
+    filter: brightness(1.3);
+    box-shadow: 0 0 12px currentColor;
+}
+
+.eye-btn.active { filter: brightness(1.4); box-shadow: 0 0 20px currentColor; }
+
+/* ── Sliders ─────────────────────────────────────────────────── */
+.slider-group {
+    margin-top: 10px;
+}
+
+.slider-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+}
+
+.slider-label .val {
+    color: var(--amber);
+    font-size: 11px;
+}
+
+input[type="range"] {
+    width: 100%;
+    height: 4px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: var(--border);
+    border-radius: 2px;
+    outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 1px;
+    background: var(--amber);
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(240,165,0,0.5);
+    border: none;
+}
+
+/* ── Status console ──────────────────────────────────────────── */
+.console {
+    background: #080a0c;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 12px 14px;
+    font-size: 11px;
+    color: var(--text-dim);
+    min-height: 52px;
+    max-height: 120px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.console-line {
+    display: flex;
+    gap: 10px;
+    animation: fadein 0.2s ease;
+}
+
+@keyframes fadein { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+.console-line .ts  { color: var(--text-dim); min-width: 60px; }
+.console-line .msg { color: var(--text); }
+.console-line .msg.ok  { color: var(--green); }
+.console-line .msg.err { color: var(--red); }
+.console-line .msg.ard { color: var(--blue); }
+
+/* ── Arduino data banner ─────────────────────────────────────── */
+.ard-data {
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: var(--blue);
+    min-height: 16px;
+    margin-top: 6px;
+    opacity: 0.8;
+}
+
+/* ── Dpad ────────────────────────────────────────────────────── */
+.dpad {
+    display: grid;
+    grid-template-columns: repeat(3, 40px);
+    grid-template-rows: repeat(3, 40px);
+    gap: 4px;
+    margin-bottom: 14px;
+}
+
+.dpad .btn { padding: 0; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+.dpad .center { background: rgba(240,165,0,0.05); border-color: var(--amber-dim); font-size: 10px; color: var(--amber-dim); letter-spacing: 0.05em; }
+
+/* ── Grid helpers for dpad positions ─────────────────────────── */
+.dpad .up    { grid-column: 2; grid-row: 1; }
+.dpad .left  { grid-column: 1; grid-row: 2; }
+.dpad .center{ grid-column: 2; grid-row: 2; }
+.dpad .right { grid-column: 3; grid-row: 2; }
+.dpad .down  { grid-column: 2; grid-row: 3; }
+
+/* ── Footer ──────────────────────────────────────────────────── */
+footer {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    padding: 8px 32px;
+    background: var(--bg-panel);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    z-index: 100;
+}
+
+.last-cmd { color: var(--amber); }
+
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 620px) {
+    main { grid-template-columns: 1fr; }
+    .full-width { grid-column: 1; }
+}

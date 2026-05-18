@@ -113,7 +113,7 @@ void Membre::move() {
                 Serial.print(name);
                 Serial.print(F("] Servo "));
                 Serial.print(i);
-                Serial.println(F(" → cible atteinte, passage au repos ✓"));
+                Serial.println(F(" → cible atteinte, passage au repos"));
             }
             continue;
         }
@@ -150,6 +150,23 @@ void Membre::move() {
         Serial.println(F("°)"));
     }
 }
+
+void Membre::begin(uint8_t cycles) {
+    Serial.print(F("["));
+    Serial.print(name);
+    Serial.print(F("] Synchronisation de la chaîne ("));
+    Serial.print(cycles);
+    Serial.println(F(" cycles)…"));
+
+    for (uint8_t i = 0; i < cycles; i++) {
+        chain.update();
+    }
+
+    Serial.print(F("["));
+    Serial.print(name);
+    Serial.println(F("] Chaîne prête ✓"));
+}
+
 /**
  * @brief Met à jour la LED du servo en fonction de son état.
  *

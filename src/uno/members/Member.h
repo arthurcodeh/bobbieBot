@@ -38,6 +38,9 @@ public:
     void        setDestination(uint8_t index, int angle);
     void        move();
 
+    // Initialisation du membre : doit être appelée dans setup() pour configurer les servos et LEDs
+    void begin(uint8_t cycles = 20);
+
 protected:
     int         pin;
     const char* name;

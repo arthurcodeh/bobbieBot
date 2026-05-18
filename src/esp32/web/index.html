@@ -2,206 +2,217 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Meccanoid Control Panel</title>
-
-    <style>
-        body {
-            background-color: #1e1e2f;
-            color: #ffffff;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-        }
-
-        h1 {
-            text-align: center;
-            color: #ffd700;
-            margin-bottom: 30px;
-        }
-
-        h2 {
-            margin-top: 30px;
-            color: #9cdcfe;
-        }
-
-        .section {
-            background-color: #2d2d44;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            box-shadow: 0 6px 10px rgba(0,0,0,0.3);
-        }
-
-        .buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        button {
-            background-color: #3a3a5c;
-            color: white;
-            border: none;
-            padding: 12px 18px;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: transform 0.2s, background-color 0.2s;
-        }
-
-        button:hover {
-            background-color: #505080;
-            transform: scale(1.05);
-        }
-
-        input[type="range"] {
-            width: 100%;
-        }
-
-        .slider-group {
-            margin-top: 15px;
-        }
-
-        .status {
-            margin-top: 20px;
-            font-size: 14px;
-            color: #7fff7f;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MECCANOID // CONTROL</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<h1>🤖 Meccanoid – Control Panel</h1>
+<!-- ═══════════════════════════ HEADER ════════════════════════════ -->
+<header>
+    <div class="logo">ROBBIE <span>// CTRL</span></div>
+    <div class="header-status">
+        <div class="connection-badge">
+            <div class="dot" id="conn-dot"></div>
+            <span id="conn-label">CONNECTING...</span>
+        </div>
+    </div>
+</header>
 
-<!-- TÊTE
-     Protocole : "head <servoIndex> <angle>"
-     Servo 0 → rotation horizontale [10°, 170°]
-     Servo 1 → inclinaison verticale [45°, 135°]
--->
-<div class="section">
-    <h2>Tête</h2>
+<!-- ═══════════════════════════ MAIN ══════════════════════════════ -->
+<main>
 
-    <div class="buttons">
-        <button onclick="sendCmd('head 0 60')">← Gauche</button>
-        <button onclick="sendCmd('head 0 120')">→ Droite</button>
-        <button onclick="sendCmd('head 1 60')">↑ Haut</button>
-        <button onclick="sendCmd('head 1 120')">↓ Bas</button>
-        <button onclick="sendCmd('head 0 90'); sendCmd('head 1 90')">⦿ Centre</button>
+    <!-- ── TÊTE ─────────────────────────────────────────────────── -->
+    <div class="panel">
+        <div class="panel-header">
+            <span class="panel-title">HEAD</span>
+            <span class="panel-label">SERVO 0–1</span>
+        </div>
+        <div class="panel-body">
+
+
+            <!-- Sliders fins -->
+            <div class="slider-group">
+                <div class="slider-label">
+                    <span>ROTATION &nbsp;(S0)</span>
+                    <span class="val" id="val-h0">90°</span>
+                </div>
+                <input type="range" min="10" max="170" value="90"
+                       oninput="document.getElementById('val-h0').textContent=this.value+'°'"
+                       onchange="cmd('head 0 '+this.value)">
+            </div>
+
+            <div class="slider-group" style="margin-top:12px;">
+                <div class="slider-label">
+                    <span>INCLINAISON (S1)</span>
+                    <span class="val" id="val-h1">90°</span>
+                </div>
+                <input type="range" min="45" max="135" value="90"
+                       oninput="document.getElementById('val-h1').textContent=this.value+'°'"
+                       onchange="cmd('head 1 '+this.value)">
+            </div>
+        </div>
     </div>
 
-    <div class="slider-group">
-        <label>Rotation (servo 0) — horizontal</label>
-        <input type="range" min="10" max="170" value="90"
-               oninput="sendCmd('head 0 ' + this.value)">
+    <!-- ── YEUX ─────────────────────────────────────────────────── -->
+    <div class="panel" style="--accent: #3b9ede;">
+        <div class="panel-header">
+            <span class="panel-title" style="color:var(--blue);">EYES</span>
+            <span class="panel-label">LED 0–1</span>
+        </div>
+        <div class="panel-body">
+            <div class="btn-row">
+                <button class="eye-btn off"   onclick="setEye('off')"  >OFF</button>
+                <button class="eye-btn white" onclick="setEye('white')">WHITE</button>
+                <button class="eye-btn red"   onclick="setEye('red')"  >RED</button>
+                <button class="eye-btn green" onclick="setEye('green')">GREEN</button>
+                <button class="eye-btn blue"  onclick="setEye('blue')" >BLUE</button>
+            </div>
+            <div class="panel-label" style="font-size:10px; color:var(--text-dim);">
+                → Protocole : <span style="color:var(--blue)">eyes &lt;action&gt;</span>
+            </div>
+        </div>
     </div>
 
-    <div class="slider-group">
-        <label>Inclinaison (servo 1) — vertical</label>
-        <input type="range" min="45" max="135" value="90"
-               oninput="sendCmd('head 1 ' + this.value)">
+    <!-- ── BRAS GAUCHE ──────────────────────────────────────────── -->
+    <div class="panel" style="--accent: #2ecc71;">
+        <div class="panel-header">
+            <span class="panel-title" style="color:var(--green);">LEFT ARM</span>
+            <span class="panel-label">SERVO 0–2</span>
+        </div>
+        <div class="panel-body">
+            <div class="btn-row">
+                <button class="btn" onclick="cmd('left 0 150')">↑ ÉPAULE</button>
+                <button class="btn" onclick="cmd('left 0 30')">↓ ÉPAULE</button>
+            </div>
+            <div class="btn-row">
+                <button class="btn" onclick="cmd('left 1 150')">↑ COUDE</button>
+                <button class="btn" onclick="cmd('left 1 30')">↓ COUDE</button>
+            </div>
+            <div class="btn-row">
+                <button class="btn" onclick="cmd('left 2 0')">↔ OUVERT</button>
+                <button class="btn" onclick="cmd('left 2 90')">✕ FERMÉ</button>
+            </div>
+
+            <div class="slider-group">
+                <div class="slider-label">
+                    <span>ÉPAULE (S0)</span>
+                    <span class="val" id="val-l0">90°</span>
+                </div>
+                <input type="range" min="10" max="170" value="90"
+                       oninput="document.getElementById('val-l0').textContent=this.value+'°'"
+                       onchange="cmd('left 0 '+this.value)">
+            </div>
+            <div class="slider-group" style="margin-top:10px;">
+                <div class="slider-label">
+                    <span>COUDE &nbsp;(S1)</span>
+                    <span class="val" id="val-l1">90°</span>
+                </div>
+                <input type="range" min="10" max="180" value="90"
+                       oninput="document.getElementById('val-l1').textContent=this.value+'°'"
+                       onchange="cmd('left 1 '+this.value)">
+            </div>
+            <div class="slider-group" style="margin-top:10px;">
+                <div class="slider-label">
+                    <span>PINCE &nbsp;(S2)</span>
+                    <span class="val" id="val-l2">45°</span>
+                </div>
+                <input type="range" min="0" max="90" value="45"
+                       oninput="document.getElementById('val-l2').textContent=this.value+'°'"
+                       onchange="cmd('left 2 '+this.value)">
+            </div>
+        </div>
     </div>
-</div>
 
-<!-- BRAS GAUCHE
-     Protocole : "left <servoIndex> <angle>"
-     Servo 0 → épaule [10°, 170°]
-     Servo 1 → coude  [10°, 180°]
-     Servo 2 → pince  [0°,  90°]
--->
-<div class="section">
-    <h2>Bras gauche</h2>
+    <!-- ── BRAS DROIT ────────────────────────────────────────────── -->
+    <div class="panel" style="--accent: #e04040;">
+        <div class="panel-header">
+            <span class="panel-title" style="color:#e06060;">RIGHT ARM</span>
+            <span class="panel-label">SERVO 0–2</span>
+        </div>
+        <div class="panel-body">
+            <div class="btn-row">
+                <button class="btn" onclick="cmd('right 0 150')">↑ ÉPAULE</button>
+                <button class="btn" onclick="cmd('right 0 30')">↓ ÉPAULE</button>
+            </div>
+            <div class="btn-row">
+                <button class="btn" onclick="cmd('right 1 150')">↑ COUDE</button>
+                <button class="btn" onclick="cmd('right 1 30')">↓ COUDE</button>
+            </div>
+            <div class="btn-row">
+                <button class="btn" onclick="cmd('right 2 180')">↔ OUVERT</button>
+                <button class="btn" onclick="cmd('right 2 90')">✕ FERMÉ</button>
+            </div>
 
-    <div class="buttons">
-        <button onclick="sendCmd('left 0 150')">Lever</button>
-        <button onclick="sendCmd('left 0 30')">Baisser</button>
-        <button onclick="sendCmd('left 2 0')">Ouvrir</button>
-        <button onclick="sendCmd('left 2 90')">Fermer</button>
+            <div class="slider-group">
+                <div class="slider-label">
+                    <span>ÉPAULE (S0)</span>
+                    <span class="val" id="val-r0">90°</span>
+                </div>
+                <input type="range" min="10" max="170" value="90"
+                       oninput="document.getElementById('val-r0').textContent=this.value+'°'"
+                       onchange="cmd('right 0 '+this.value)">
+            </div>
+            <div class="slider-group" style="margin-top:10px;">
+                <div class="slider-label">
+                    <span>COUDE &nbsp;(S1)</span>
+                    <span class="val" id="val-r1">90°</span>
+                </div>
+                <input type="range" min="10" max="180" value="90"
+                       oninput="document.getElementById('val-r1').textContent=this.value+'°'"
+                       onchange="cmd('right 1 '+this.value)">
+            </div>
+            <div class="slider-group" style="margin-top:10px;">
+                <div class="slider-label">
+                    <span>PINCE &nbsp;(S2)</span>
+                    <span class="val" id="val-r2">135°</span>
+                </div>
+                <input type="range" min="90" max="180" value="135"
+                       oninput="document.getElementById('val-r2').textContent=this.value+'°'"
+                       onchange="cmd('right 2 '+this.value)">
+            </div>
+        </div>
     </div>
-</div>
 
-<!-- BRAS DROIT
-     Protocole : "right <servoIndex> <angle>"
-     Servo 0 → épaule [10°, 170°]
-     Servo 1 → coude  [10°, 180°]
-     Servo 2 → pince  [90°, 180°] (symétrique du gauche)
--->
-<div class="section">
-    <h2>Bras droit</h2>
-
-    <div class="buttons">
-        <button onclick="sendCmd('right 0 150')">Lever</button>
-        <button onclick="sendCmd('right 0 30')">Baisser</button>
-        <button onclick="sendCmd('right 2 180')">Ouvrir</button>
-        <button onclick="sendCmd('right 2 90')">Fermer</button>
+    <!-- ── ACTIONS GLOBALES ──────────────────────────────────────── -->
+    <div class="panel full-width">
+        <div class="panel-header">
+            <span class="panel-title">GLOBAL ACTIONS</span>
+            <span class="panel-label">ALL MEMBERS</span>
+        </div>
+        <div class="panel-body" style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+            <button class="btn primary" onclick="resetAll()">⟳ POSITION NEUTRE</button>
+            <button class="btn" onclick="waveSequence()">〜 WAVE LEFT</button>
+            <button class="btn" onclick="nodSequence()">↕ HOCHEMENT</button>
+            <button class="btn danger" onclick="eyesOff(); resetAll()">⏹ STOP ALL</button>
+        </div>
     </div>
-</div>
 
-<!-- ACTIONS GLOBALES
-     Remet tous les membres en position neutre (90°).
--->
-<div class="section">
-    <h2>Actions globales</h2>
-
-    <div class="buttons">
-        <button onclick="resetAll()">Position neutre</button>
+    <!-- ── CONSOLE ───────────────────────────────────────────────── -->
+    <div class="panel full-width">
+        <div class="panel-header">
+            <span class="panel-title">CONSOLE</span>
+            <span class="panel-label" id="cmd-count">0 CMD SENT</span>
+        </div>
+        <div class="panel-body" style="padding-bottom:12px;">
+            <div class="console" id="console-log"></div>
+            <div class="ard-data" id="ard-data">— en attente de données Arduino —</div>
+        </div>
     </div>
-</div>
 
-<!-- YEUX
-     Protocole : "eyes <action>"
-     Actions disponibles : off, white, red, green, blue
--->
-<div class="section">
-    <h2>Yeux</h2>
+</main>
 
-    <div class="buttons">
-        <button onclick="sendCmd('eyes off')">Éteints</button>
-        <button onclick="sendCmd('eyes white')">Blanc</button>
-        <button onclick="sendCmd('eyes red')">Rouge</button>
-        <button onclick="sendCmd('eyes green')">Vert</button>
-        <button onclick="sendCmd('eyes blue')">Bleu</button>
-    </div>
-</div>
+<!-- ═══════════════════════════ FOOTER ════════════════════════════ -->
+<footer>
+    <span>MECCANOID v1.0 — ESP32 GATEWAY</span>
+    <span>DERNIÈRE CMD : <span class="last-cmd" id="footer-cmd">—</span></span>
+    <span id="footer-ping">PING: —</span>
+</footer>
 
-
-<div class="status" id="status">
-    Statut : prêt
-</div>
-
-<script>
-    /**
-     * Envoie une commande au firmware ESP32 via la route /cmd?value=...
-     * Le firmware transmet ensuite la valeur à l'Arduino via Serial.
-     *
-     * @param {string} value - Commande texte (ex: "head 0 90", "eyes red")
-     */
-    function sendCmd(value) {
-        fetch('/cmd?value=' + encodeURIComponent(value))
-            .then(() => updateStatus("Commande envoyée : " + value))
-            .catch(() => updateStatus("Erreur : ESP32 injoignable"));
-    }
-
-    /**
-     * Remet tous les membres en position neutre.
-     * Envoie une commande par servo pour garantir l'ordre d'exécution.
-     */
-    function resetAll() {
-        ['head 0 90', 'head 1 90',
-            'left 0 90', 'left 1 90', 'left 2 45',
-            'right 0 90', 'right 1 90', 'right 2 135'
-        ].forEach(cmd => sendCmd(cmd));
-    }
-
-    /**
-     * Met à jour la barre de statut visible en bas de page.
-     * @param {string} text - Message à afficher.
-     */
-    function updateStatus(text) {
-        document.getElementById('status').innerText = 'Statut : ' + text;
-    }
-</script>
-
+<!-- ═══════════════════════════ SCRIPT ════════════════════════════ -->
+<script src="commandBuilder.js"></script>
+<script src="statusPoller.js"></script>
 </body>
 </html>
