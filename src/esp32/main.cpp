@@ -36,8 +36,8 @@ static constexpr uint8_t  WIFI_TIMEOUT_STEPS = 20;
 static constexpr uint32_t UART_BAUD = 9600;
 
 /** Pins UART vers l'Arduino */
-static constexpr uint8_t RXD2 = 44;
-static constexpr uint8_t TXD2 = 43;
+static constexpr uint8_t RXD2 = 16 ; // Reçoit depuis TX (Pin 3) de l'uno
+static constexpr uint8_t TXD2 = 15; // Émet vers RX (pin 2) de l'Uno
 
 /** Longueur maximale d'une commande acceptée */
 static constexpr uint8_t CMD_MAX_LEN = 32;

@@ -43,5 +43,5 @@
 #define FOOTER_MOTOR_PIN 11
 
 // Communication ESP32 (SoftwareSerial — Arduino Uno)
-#define RX_ESP32 2   // Reçoit depuis TX de l'ESP32
-#define TX_ESP32 3   // Émet vers RX de l'ESP32
+#define RX_ESP32 2   // Reçoit depuis TX (GPIO 17) de l'ESP32
+#define TX_ESP32 3   // Émet vers RX (GPIO 16) de l'ESP32
