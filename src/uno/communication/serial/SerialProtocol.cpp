@@ -30,7 +30,7 @@ bool SerialProtocol::read(Command& out) {
 
     // Priorité à l'ESP32 (Serial1) pour éviter de mélanger les commandes debug et ESP32
     if (espSerial.available()) {
-        line = Serial.readStringUntil('\n');
+        line = espSerial.readStringUntil('\n');
     } else if (Serial.available()) {
         line = Serial.readStringUntil('\n');
     } else {

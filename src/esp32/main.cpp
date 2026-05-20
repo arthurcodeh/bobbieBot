@@ -235,6 +235,11 @@ void setup() {
     server.on("/data",   HTTP_GET,     handleData);
     server.on("/test",   HTTP_GET,     handleTest);
     server.on("/cmd",    HTTP_OPTIONS, handleOptions);
+    server.onNotFound([]() {
+        sendCORSHeaders();
+        server.send(404, "text/plain", "Not found");
+    });
+
 
     server.begin();
     Serial.println(F("[HTTP] Serveur web démarré sur le port 80 ✓"));

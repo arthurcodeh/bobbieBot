@@ -35,6 +35,8 @@ void setup() {
 
     Serial.println(F("[main] Arduino démarré ✓"));
 
+    SerialProtocol::begin();
+
     tete       = new Tete(PIN_HEAD);
     yeux       = new Yeux(HEAD_LED_PIN);
     //brasGauche = new Bras(PIN_ARM_LEFT,  "left");
