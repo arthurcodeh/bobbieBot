@@ -10,8 +10,11 @@
 #include <string.h>
 
 void MeccanoidController::add_member(Membre* m) {
-    if (memberCount < MAX_MEMBERS) {
-        membres[memberCount++] = m;
+    if (memberCount >= MAX_MEMBERS) {
+        Serial.print(F("[Controller] ERREUR : nombre maximum de membres atteint ("));
+        Serial.print(MAX_MEMBERS);
+        Serial.println(F(")"));
+        return;
     }
 }
 
