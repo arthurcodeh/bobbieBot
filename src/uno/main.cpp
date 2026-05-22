@@ -62,6 +62,7 @@ void loop() {
     controller.update();
 
     tete->move();
+    yeux->move();
     //brasGauche->move();
     //brasDroit->move();
 }

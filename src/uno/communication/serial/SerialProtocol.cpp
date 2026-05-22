@@ -40,9 +40,11 @@ bool SerialProtocol::read(Command& out) {
     line.trim(); // supprime \r et espaces superflus
     if (line.length() == 0) return false;
 
-    Serial.print("[SerialProtocol] Ligne reçue : '");
-    Serial.print(line);
-    Serial.println("'");
+   if (DEBUG_MODE) {
+        Serial.print(F("[SerialProtocol] Reçu brut → '"));
+        Serial.print(line);
+        Serial.println(F("'"));
+    }
 
     out = parse(line);
 
