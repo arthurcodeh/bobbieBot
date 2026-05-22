@@ -4,6 +4,8 @@
  */
 #pragma once
 
+#define DEBUG_MODE true // Activer ou désactiver les messages de debug dans le moniteur série
+
 #define MAX_MEMBERS_COUNT 10 // Nombre maximum de membres enregistrable dans le robot (tête, bras, jambes, etc.)
 
 // --- Communication série ---
