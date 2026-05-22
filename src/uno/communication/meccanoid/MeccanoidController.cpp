@@ -16,6 +16,15 @@ void MeccanoidController::add_member(Membre* m) {
         Serial.println(F(")"));
         return;
     }
+    
+    m->begin();
+    membres[memberCount++] = m;
+
+    if (DEBUG_MODE) {
+        Serial.print(F("[Controller] Membre ajouté : "));
+        Serial.println(m->getName());
+        Serial.println(F("'"));
+    }
 }
 
 void MeccanoidController::update() {
