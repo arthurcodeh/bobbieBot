@@ -23,6 +23,12 @@
 class Yeux : public Membre {
 public:
     /**
+     * @brief Identifie ce membre comme EYES pour un cast sécurisé.
+     * @see MemberType
+     */
+    MemberType getType() const override { return MemberType::EYES; };
+
+    /**
      * @brief Initialise les yeux sur le pin donné, sans servo associé.
      * @param pin Pin de communication avec la chaîne Meccanoid.
      */

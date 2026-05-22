@@ -19,6 +19,15 @@
 #include <Meccanoid.h>
 #include "../config/RobotConfig.h"
 
+
+/**
+ * @brief Identifiant de type pour les différents membres
+ *
+ * Permet un dispatch sécurisé sans RTTI (dynamic_cast) dans les fonctions de contrôle génériques. ( Non disponible sur Arduino Uno)
+ * Chaque sous-classe override getType() pour retourner son type spécifique, et les fonctions de contrôle peuvent vérifier ce type avant de caster.
+ */
+enum class MemberType {GENERYC, EYES};
+
 /** Nombre max de servos qu'un membre peut gérer (défini dans RobotConfig) */
 #define MAX_SERVOS SERVOS_MAX_COUNT
 
@@ -32,6 +41,12 @@
 class Membre {
 
 public:
+    /** @brief Retourne le type du membre.
+     * Override dans les sous-classes pour activer le dispatch sécurisé.
+     *
+     * @return L'id du type de ce membre (par défaut : GENERYC).
+     */
+    virtual MemberType getType() const {return MemberType::GENERYC; };
     Membre(int pin, const char* name, const ServoSpec* specs, uint8_t count);
 
     const char* getName() const;

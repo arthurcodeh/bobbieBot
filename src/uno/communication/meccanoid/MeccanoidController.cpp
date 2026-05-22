@@ -27,16 +27,14 @@ void MeccanoidController::update() {
         if (strcmp(membres[i]->getName(), cmd.member) != 0) continue;
 
         // --- Commande LED (ex: "led red") ---
-        if (cmd.action[0] != '\0') {
-            // Cast sûr : on sait que le membre "eyes" est une instance de Yeux
-            Yeux* yeux = static_cast<Yeux*>(membres[i]);
-            dispatchEyes(yeux, cmd.action);
+        if (membres[i]->getType() != MemberType::EYES) {
+            Serial.print(F("[Controller] ERREUR : '"));
+            Serial.print(membres[i]->getName());
+            Serial.println(F("' ne supporte pas les commandes action"));
+            break;
         }
-        // --- Commande servo (ex: "head 0 120") ---
-        else {
-            membres[i]->setDestination(cmd.servoIndex, cmd.angle);
-        }
-
+        Yeux* yeux = static_cast<Yeux*>(membres[i]); // sûr : type vérifié
+        dispatchEyes(yeux, cmd.action);
         break; // membre trouvé et commandé, sortir de la boucle
     }
 }
