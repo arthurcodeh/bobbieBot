@@ -10,19 +10,19 @@ L'ESP32 joue le rôle de **passerelle** entre le réseau WiFi et l'Arduino Uno :
 
 ## Configuration requise
 
-Avant de flasher, modifier dans `main.cpp` :
-
+Avant de flasher, copier `config/wifi.h.example` → `config/wifi.h`
+et renseigner les valeurs :
 ```cpp
-const char* ssid     = "TON_WIFI";
-const char* password = "TON_MDP";
+#define WIFI_SSID     "TON_WIFI"
+#define WIFI_PASSWORD "TON_MOT_DE_PASSE"
 ```
 
 ## Pins UART
 
-| Pin ESP32 | Fonction |
-|-----------|----------|
+| Pin ESP32     | Fonction |
+|---------------|----------|
 | GPIO 16 (RX2) | Réception depuis Arduino TX |
-| GPIO 17 (TX2) | Émission vers Arduino RX |
+| GPIO 15 (TX2) | Émission vers Arduino RX |
 
 ## Routes HTTP
 
