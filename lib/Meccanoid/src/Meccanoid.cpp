@@ -105,7 +105,7 @@ ServoAdapter & ServoAdapter :: setColor(byte r, byte g, byte b) {
 	                        (g << 1) | 
 	                        (b << 2);
 
-	if (autoUpdate) chain.update();
+	if (autoUpdate) {chain.update(); chain.update();}
 
 	return *this;
 }
@@ -114,7 +114,7 @@ int ServoAdapter :: checkType() {
 	return module.type == TYPE_SERVO;
 }
 
-/* -- Led adapter -- */
+/* -- Led adapter (Yeux) -- */
 
 LedAdapter :: LedAdapter(Module & module, Chain & chain) : ModuleAdapter(module, chain) {
 

@@ -24,6 +24,7 @@
 Membre::Membre(
     int                 pin,    // Pin de communication pour les servos
     const char*         name,   // Nom du membre pour les logs
+    const ServoSpec* specs,
     uint8_t             count   // Nombre de servos dans ce membre
     ): pin(pin), name(name), chain(pin), servoCount(count)
 {

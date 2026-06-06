@@ -84,6 +84,7 @@ Command SerialProtocol::parse(const String& line) {
 
     // Extraire le nom du membre ("head", "led", ...)
     String memberStr = line.substring(0, firstSpace);
+    memberStr.trim();
     memberStr.toCharArray(cmd.member, sizeof(cmd.member));
 
     String rest = line.substring(firstSpace + 1);

@@ -46,12 +46,13 @@ public:
      *
      * @return L'id du type de ce membre (par défaut : GENERYC).
      */
+    virtual ~Membre() = default;
     virtual MemberType getType() const {return MemberType::GENERYC; };
     Membre(int pin, const char* name, const ServoSpec* specs, uint8_t count);
 
-    const char* getName() const;
-    void        setDestination(uint8_t index, int angle);
-    void        move();
+    const char*         getName() const;
+    void                setDestination(uint8_t index, int angle);
+    virtual void        move();
 
     // Initialisation du membre : doit être appelée dans setup() pour configurer les servos et LEDs
     void begin(uint8_t cycles = 20);

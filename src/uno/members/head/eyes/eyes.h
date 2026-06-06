@@ -80,4 +80,9 @@ public:
         chain.getLed(0).setColor(r, g, b, fadetime);
         chain.getLed(1).setColor(r, g, b, fadetime);
     }
+
+    void move() override {
+        chain.update();
+        chain.update();
+    }
 };

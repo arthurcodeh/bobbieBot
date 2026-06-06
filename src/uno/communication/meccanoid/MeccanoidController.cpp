@@ -28,26 +28,40 @@ void MeccanoidController::add_member(Membre* m) {
 }
 
 void MeccanoidController::update() {
-   Command cmd;
+    Command cmd;
 
-    // rien faire si aucune commande reçue
     if (!SerialProtocol::read(cmd)) return;
 
-    // Recherche du membre correspondant au nom de la commande
+    if (DEBUG_MODE) {
+        Serial.print(F("[update] member='"));
+        Serial.print(cmd.member);
+        Serial.print(F("' action='"));
+        Serial.print(cmd.action);
+        Serial.print(F("' action[0]="));
+        Serial.println((int)cmd.action[0]);
+    }
+
+
     for (uint8_t i = 0; i < memberCount; i++) {
-        // Vérifier si le nom du membre correspond à la commande
+        Serial.print(F("[update] comparaison avec : "));
+        Serial.println(membres[i]->getName());
+
         if (strcmp(membres[i]->getName(), cmd.member) != 0) continue;
 
-        // --- Commande LED (ex: "led red") ---
-        if (membres[i]->getType() != MemberType::EYES) {
-            Serial.print(F("[Controller] ERREUR : '"));
-            Serial.print(membres[i]->getName());
-            Serial.println(F("' ne supporte pas les commandes action"));
-            break;
+        Serial.println(F("[update] membre trouvé !"));
+
+        if (cmd.action[0] != '\0') {
+            Serial.println(F("[update] → branche action"));
+            if (membres[i]->getType() == MemberType::EYES) {
+                Serial.println(F("[update] → dispatch eyes"));
+                dispatchEyes(static_cast<Yeux*>(membres[i]), cmd.action);
+            }
+        } else {
+            Serial.println(F("[update] → branche servo"));
+            membres[i]->setDestination(cmd.servoIndex, cmd.angle);
         }
-        Yeux* yeux = static_cast<Yeux*>(membres[i]); // sûr : type vérifié
-        dispatchEyes(yeux, cmd.action);
-        break; // membre trouvé et commandé, sortir de la boucle
+
+        break;
     }
 }
 
@@ -55,9 +69,20 @@ void MeccanoidController::update() {
  * @brief Traduit une action textuelle en appel de méthode sur Yeux.
  *
  * @param yeux   Pointeur vers le membre yeux.
- * @param action Nom de l'action : "off", "white", "red", "green", "blue".
+ * @param action Nom de l'action: "off", "white", "red", "green", "blue".
  */
 void MeccanoidController::dispatchEyes(Yeux* yeux, const char* action) {
+    if (DEBUG_MODE) {
+        Serial.print(F("[dispatchEyes] len="));
+        Serial.print(strlen(action));
+        Serial.print(F(" bytes : "));
+        for (uint8_t i = 0; i < strlen(action); i++) {
+            Serial.print((int)action[i]);
+            Serial.print(' ');
+        }
+        Serial.println();
+    }
+
     if      (strcmp(action, "off")   == 0) yeux->eteindre();
     else if (strcmp(action, "white") == 0) yeux->setBlanc();
     else if (strcmp(action, "red")   == 0) yeux->setRouge();
@@ -66,6 +91,5 @@ void MeccanoidController::dispatchEyes(Yeux* yeux, const char* action) {
     else {
         Serial.print(F("[Controller] Action LED inconnue : "));
         Serial.println(action);
-        Serial.println(F("'"));
     }
 }
