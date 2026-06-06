@@ -1,40 +1,132 @@
 # BOBBIE BOT - ISA
 Reconstruction et reprogrammation d’un robot Meccanoid avec une architecture logicielle moderne, modulaire et maintenable.
-___
 
+---
 
-## Présentation
-Ce projet consiste à reconstruire et reprogrammer un robot Meccanoid en utilisant une architecture logicielle moderne, modulaire et maintenable.
+## Vue d'ensemble
 
-L'objectif n'est pas seulement de faire fonctionner le robot, mais surtout de créer une base solide pour le développement,
-avec une architecture propre et évolutive afin que le projet puisse être repris et amélioré par d'autres développeurs à l'avenir.
+```
+Navigateur  ──HTTP──►  ESP32-S3       ──UART──►  Arduino Uno
+index.html             Passerelle WiFi            Firmware C++
+                       LittleFS                   Servos + LEDs
+```
 
-Le robot est développeé autour de :
-- Un Arduino pour le contrôle bas niveau des servos et des protocole de communication.
-- Un ESP32 pour la communication réseau et l'interface web.
-- Une architecture modulaire permettant d'ajouter facilement de nouveaux comportements et fonctionnalités.
-___
-## Fonctionnalités
-- Contrôle des servos pour les mouvements du robot.
-- Communication entre l'Arduino et l'ESP32 pour la coordination des actions.
-- Interface web pour contrôler le robot à distance.
-- Architecture logicielle modulaire pour faciliter l'ajout de nouvelles fonctionnalités.
-- Documentation complète pour permettre à d'autres développeurs de comprendre et de contribuer au projet.
+Chaque couche a une responsabilité unique et ne connaît que son voisin immédiat.
 
+---
 
-## Technologies utilisées
-- Clion pour la programmation de **l'Arduino** et de l'**ESP32**.
-- PlatformIO pour la gestion des dépendances et la compilation du code.
-- C++ pour la logique de contrôle du robot.
-- HTML/CSS/JavaScript pour l'interface web.
-- Git pour le contrôle de version et la collaboration.
-- Doxygen pour la documentation du code.
+## Structure du dépôt
 
+```
+bobbieBot/
+├── src/
+│   ├── esp32/                  # Firmware ESP32-S3 (passerelle WiFi)
+│   │   ├── main.cpp
+│   │   └── config/
+│   │       ├── wifi.h.example  # Modèle de configuration WiFi (ne pas committer wifi.h)
+│   │       └── wifi.h          # Ignoré par .gitignore — à créer localement
+│   └── uno/                    # Firmware Arduino Uno (contrôle du robot)
+│       ├── main.cpp
+│       ├── config/             # Pins.h, RobotConfig.h
+│       ├── members/            # Membre, Tete, Yeux, Bras + ServoSpec
+│       │   ├── arm/
+│       │   └── head/
+│       │       └── eyes/
+│       └── communication/      # SerialProtocol, MeccanoidController
+│           ├── meccanoid/
+│           └── serial/
+├── data/                       # Interface web (uploadée sur LittleFS)
+│   ├── index.html
+│   ├── style.css
+│   ├── commandBuilder.js
+│   └── statusPoller.js
+├── lib/
+│   └── Meccanoid/src/          # Bibliothèque protocole PWM Meccano
+└── platformio.ini              # Environnements : uno / unoHome / esp32
+```
 
-## Installation et utilisation
-1. Cloner le dépôt Git du projet.
-2. Installer les dépendances nécessaires pour l'Arduino et l'ESP32.
-3. Compiler et téléverser le code sur les microcontrôleurs.
-4. Accéder à l'interface web pour contrôler le robot à distance.
-5. Consulter la documentation pour comprendre l'architecture du projet et contribuer au développement.
+---
 
+## Prérequis
+
+- [PlatformIO](https://platformio.org/) (extension VS Code recommandée)
+- Arduino Uno R3 + ESP32-S3 DevKitC-1
+- Servos et LEDs Meccanoid (chaîne PWM)
+- Réseau WiFi 2,4 GHz
+
+---
+
+## Mise en route
+
+### 1. Configurer le WiFi
+
+```bash
+cp src/esp32/config/wifi.h.example src/esp32/config/wifi.h
+```
+
+Renseigner les valeurs dans `wifi.h` :
+
+```cpp
+#define WIFI_SSID     "VOTRE_SSID"
+#define WIFI_PASSWORD "VOTRE_MOT_DE_PASSE"
+```
+
+> `wifi.h` est listé dans `.gitignore` — ne jamais le committer.
+
+### 2. Flasher l'Arduino Uno
+
+```bash
+pio run --target upload -e uno
+```
+
+Utiliser `unoHome` si la carte connectée est un Mega (Serial1 matériel disponible).
+
+### 3. Uploader l'interface web sur l'ESP32
+
+```bash
+# Upload du système de fichiers (LittleFS) — à refaire après chaque modif de data/
+pio run --target uploadfs -e esp32
+
+# Flash du firmware
+pio run --target upload -e esp32
+```
+
+### 4. Ouvrir l'interface
+
+L'IP de l'ESP32 s'affiche dans le moniteur série après connexion WiFi. Ouvrir cette adresse dans un navigateur.
+
+---
+
+## Protocole de commande
+
+Les commandes sont des chaînes texte transmises via `GET /cmd?value=<commande>`, encodées en URL.
+
+| Type   | Format                      | Exemple     | Effet                    |
+|--------|-----------------------------|-------------|--------------------------|
+| Servo  | `<membre> <index> <angle>`  | `head 0 90` | Tête, servo 0, angle 90° |
+| Action | `<membre> <action>`         | `eyes red`  | LEDs yeux en rouge       |
+
+Membres disponibles : `head`, `eyes`, `left`, `right`.
+
+---
+
+## Environnements PlatformIO
+
+| Environnement | Cible              | Usage                          |
+|---------------|--------------------|--------------------------------|
+| `uno`         | Arduino Uno R3     | Port COM configuré (`COM10`)   |
+| `unoHome`     | Arduino Mega 2560  | Mega avec Serial1 matériel     |
+| `esp32`       | ESP32-S3 DevKitC-1 | Passerelle WiFi + LittleFS     |
+
+---
+
+## Documentation
+
+Chaque sous-dossier contient un `README.md` décrivant sa structure interne.
+Le code source est documenté au format Doxygen (`/** @brief ... */`).
+
+---
+
+## Auteur
+
+Arthur — Projet académique systèmes embarqués.
