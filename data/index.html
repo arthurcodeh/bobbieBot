@@ -6,7 +6,313 @@
     <title>MECCANOID // CONTROL</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <style>
+        /* ── Variables ─────────────────────────────────────────────── */
+        :root {
+            --bg:       #0a0c0e;
+            --bg-panel: #0f1215;
+            --bg-card:  #141820;
+            --border:   #1e2530;
+            --amber:    #f0a500;
+            --amber-dim:#7a5200;
+            --red:      #e04040;
+            --green:    #2ecc71;
+            --blue:     #3b9ede;
+            --text:     #c8d0dc;
+            --text-dim: #4a5568;
+            --mono:     'Share Tech Mono', monospace;
+            --display:  'Orbitron', monospace;
+        }
+
+        /* ── Reset ──────────────────────────────────────────────────── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: var(--mono);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ── Scanline overlay ───────────────────────────────────────── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        /* ── Header ─────────────────────────────────────────────────── */
+        header {
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-panel);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-family: var(--display);
+            font-size: 20px;
+            font-weight: 900;
+            letter-spacing: 0.15em;
+            color: var(--amber);
+            text-shadow: 0 0 20px rgba(240,165,0,0.4);
+        }
+
+        .logo span {
+            color: var(--text-dim);
+            font-weight: 400;
+        }
+
+        .header-status {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 11px;
+            letter-spacing: 0.1em;
+            color: var(--text-dim);
+        }
+
+        .connection-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--text-dim);
+            transition: background 0.3s;
+        }
+
+        .dot.online  { background: var(--green); box-shadow: 0 0 6px var(--green); animation: pulse 2s infinite; }
+        .dot.offline { background: var(--red);   box-shadow: 0 0 6px var(--red); }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0.4; }
+        }
+
+        /* ── Main layout ─────────────────────────────────────────────── */
+        main {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 28px 20px 60px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .full-width { grid-column: 1 / -1; }
+
+        /* ── Panel card ──────────────────────────────────────────────── */
+        .panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* accent bar top */
+        .panel::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: var(--accent, var(--amber));
+            opacity: 0.7;
+        }
+
+        .panel-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .panel-title {
+            font-family: var(--display);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            color: var(--amber);
+            text-transform: uppercase;
+        }
+
+        .panel-label {
+            font-size: 10px;
+            letter-spacing: 0.12em;
+            color: var(--text-dim);
+        }
+
+        .panel-body {
+            padding: 16px;
+        }
+
+        /* ── Buttons ─────────────────────────────────────────────────── */
+        .btn-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .btn {
+            font-family: var(--mono);
+            font-size: 12px;
+            letter-spacing: 0.08em;
+            padding: 8px 14px;
+            border: 1px solid var(--border);
+            border-radius: 2px;
+            background: var(--bg-panel);
+            color: var(--text);
+            cursor: pointer;
+            transition: border-color 0.15s, color 0.15s, background 0.15s, box-shadow 0.15s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--amber);
+            opacity: 0;
+            transition: opacity 0.1s;
+        }
+
+        .btn:active::after { opacity: 0.08; }
+
+        .btn:hover {
+            border-color: var(--amber-dim);
+            color: var(--amber);
+            box-shadow: 0 0 10px rgba(240,165,0,0.1);
+        }
+
+        .btn.primary {
+            border-color: var(--amber-dim);
+            color: var(--amber);
+            background: rgba(240,165,0,0.06);
+        }
+
+        .btn.primary:hover {
+            background: rgba(240,165,0,0.14);
+            box-shadow: 0 0 16px rgba(240,165,0,0.2);
+        }
+
+        .btn.danger {
+            border-color: #3a1a1a;
+            color: #906060;
+        }
+
+        .btn.danger:hover {
+            border-color: var(--red);
+            color: var(--red);
+            box-shadow: 0 0 10px rgba(224,64,64,0.15);
+        }
+
+        /* ── LED colour buttons ──────────────────────────────────────── */
+        .eye-btn {
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: 0.1em;
+            padding: 8px 18px;
+            border: 1px solid;
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all 0.15s;
+            background: transparent;
+        }
+
+        .eye-btn.off    { border-color: var(--text-dim); color: var(--text-dim); }
+        .eye-btn.white  { border-color: #555; color: #ddd; }
+        .eye-btn.red    { border-color: #7a2020; color: #e04040; }
+        .eye-btn.green  { border-color: #1a5c35; color: #2ecc71; }
+        .eye-btn.blue   { border-color: #1a3d6e; color: #3b9ede; }
+
+        .eye-btn:hover {
+            filter: brightness(1.3);
+            box-shadow: 0 0 12px currentColor;
+        }
+
+        .eye-btn.active { filter: brightness(1.4); box-shadow: 0 0 20px currentColor; }
+
+        /* ── Sliders ─────────────────────────────────────────────────── */
+        .slider-group {
+            margin-top: 10px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            letter-spacing: 0.1em;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+        }
+
+        .slider-label .val {
+            color: var(--amber);
+            font-size: 11px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 4px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: var(--border);
+            border-radius: 2px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 1px;
+            background: var(--amber);
+            cursor: pointer;
+            box-shadow: 0 0 8px rgba(240,165,0,0.5);
+            border: none;
+        }
+
+        /* ── Footer ──────────────────────────────────────────────────── */
+        footer {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            padding: 8px 32px;
+            background: var(--bg-panel);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 10px;
+            letter-spacing: 0.1em;
+            color: var(--text-dim);
+            z-index: 100;
+        }
+
+        .last-cmd { color: var(--amber); }
+
+        /* ── Responsive ──────────────────────────────────────────────── */
+        @media (max-width: 620px) {
+            main { grid-template-columns: 1fr; }
+            .full-width { grid-column: 1; }
+        }
+    </style>
 </head>
 <body>
 
@@ -221,7 +527,169 @@
 </footer>
 
 <!-- ═══════════════════════════ SCRIPT ════════════════════════════ -->
-<script src="commandBuilder.js"></script>
-<script src="statusPoller.js"></script>
+<script>
+    /**
+     * État global de l'interface
+     */
+    const state = {
+        cmdCount:    0,
+        online:      false,
+        activeEye:   null,
+    };
+
+
+
+    /* ── Log console ────────────────────────────────────────────── */
+    function log(msg, type = '') {
+        const el = document.getElementById('console-log');
+        const now = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const line = document.createElement('div');
+        line.className = 'console-line';
+        line.innerHTML = `<span class="ts">${now}</span><span class="msg ${type}">${msg}</span>`;
+        el.appendChild(line);
+        // Garde seulement les 40 dernières lignes
+        while (el.children.length > 40) el.removeChild(el.firstChild);
+        el.scrollTop = el.scrollHeight;
+    }
+
+    /* ── Envoi d'une commande ──────────────────────────────────── */
+    /**
+     * Envoie une commande série à l'Arduino via la route /cmd?value=...
+     * Le format attendu par SerialProtocol est : "member servoIndex angle"
+     * ou "member action" pour les LEDs.
+     *
+     * @param {string} value - Commande texte (ex: "head 0 90", "eyes red")
+     */
+    function cmd(value) {
+        const t0 = performance.now();
+
+        fetch('/cmd?value=' + encodeURIComponent(value))
+            .then(res => {
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                return res.text();
+            })
+            .then(() => {
+                const ping = Math.round(performance.now() - t0);
+                state.cmdCount++;
+                setOnline(true);
+                log(`→ ${value}`, 'ok');
+                document.getElementById('footer-cmd').textContent = value;
+                document.getElementById('footer-ping').textContent = `PING: ${ping}ms`;
+                document.getElementById('cmd-count').textContent = `${state.cmdCount} CMD SENT`;
+            })
+            .catch(err => {
+                setOnline(false);
+                log(`✕ ${value} — ${err.message}`, 'err');
+            });
+    }
+
+    /* ── Yeux — raccourci avec suivi de l'état actif ───────────── */
+    /**
+     * Commande les LEDs yeux et met à jour le bouton actif.
+     * @param {string} action - 'off' | 'white' | 'red' | 'green' | 'blue'
+     */
+    function setEye(action) {
+        cmd('eyes ' + action);
+        document.querySelectorAll('.eye-btn').forEach(b => b.classList.remove('active'));
+        const active = document.querySelector(`.eye-btn.${action}`);
+        if (active) active.classList.add('active');
+        state.activeEye = action;
+    }
+
+    function eyesOff() { setEye('off'); }
+
+    /* ── Séquences prédéfinies ──────────────────────────────────── */
+    /**
+     * Remet tous les membres en position neutre (90°).
+     * Les commandes sont envoyées avec un petit délai pour éviter
+     * la saturation du buffer série de l'Arduino.
+     */
+    function resetAll() {
+        const seq = [
+            'head 0 90', 'head 1 90',
+            'left 0 90', 'left 1 90', 'left 2 45',
+            'right 0 90','right 1 90','right 2 135',
+        ];
+        seq.forEach((c, i) => setTimeout(() => cmd(c), i * 80));
+
+        // Réinitialise les sliders visuellement
+        document.querySelectorAll('input[type="range"]').forEach(s => {
+            const mid = (parseInt(s.min) + parseInt(s.max)) / 2;
+            s.value = Math.round(mid);
+        });
+        document.getElementById('val-h0').textContent  = '90°';
+        document.getElementById('val-h1').textContent  = '90°';
+        document.getElementById('val-l0').textContent  = '90°';
+        document.getElementById('val-l1').textContent  = '90°';
+        document.getElementById('val-l2').textContent  = '45°';
+        document.getElementById('val-r0').textContent  = '90°';
+        document.getElementById('val-r1').textContent  = '90°';
+        document.getElementById('val-r2').textContent  = '135°';
+    }
+
+    /** Séquence de wave du bras gauche */
+    function waveSequence() {
+        const seq = [
+            [0, 'left 0 150'],
+            [400, 'left 1 150'],
+            [800, 'left 1 30'],
+            [1200,'left 1 150'],
+            [1600,'left 1 30'],
+            [2000,'left 0 90'],
+            [2400,'left 1 90'],
+        ];
+        seq.forEach(([t, c]) => setTimeout(() => cmd(c), t));
+    }
+
+    /** Séquence de hochement de tête */
+    function nodSequence() {
+        const seq = [
+            [0,   'head 1 60'],
+            [600, 'head 1 120'],
+            [1200,'head 1 60'],
+            [1800,'head 1 90'],
+        ];
+        seq.forEach(([t, c]) => setTimeout(() => cmd(c), t));
+    }
+</script>
+<script>
+    /* ── Statut de connexion ────────────────────────────────────── */
+    function setOnline(online) {
+        if (state.online === online) return;
+        state.online = online;
+        const dot   = document.getElementById('conn-dot');
+        const label = document.getElementById('conn-label');
+        dot.className   = 'dot ' + (online ? 'online' : 'offline');
+        label.textContent = online ? 'ONLINE' : 'OFFLINE';
+        log(online ? '✓ ESP32 joignable' : '✕ ESP32 injoignable', online ? 'ok' : 'err');
+    }
+
+    /* ── Polling des données Arduino (/data) ─────────────────────── */
+    /**
+     * Interroge /data toutes les 2 secondes pour afficher
+     * le dernier message renvoyé par l'Arduino (debug série).
+     */
+    //function pollArduinoData() {
+    //    fetch('/data')
+    //        .then(res => res.text())
+    //        .then(data => {
+    //            if (!data || data === state.lastArduinoData) return;
+    //            state.lastArduinoData = data;
+    //            document.getElementById('ard-data').textContent = '▶ ' + data;
+    //            log('Arduino : ' + data, 'ard');
+    //            setOnline(true);
+    //        })
+    //        .catch(() => setOnline(false));
+    //}
+
+    //setInterval(pollArduinoData, 2000);
+
+    /* ── Health check au chargement ─────────────────────────────── */
+    fetch('/test')
+        .then(res => { if (res.ok) setOnline(false); })
+        .catch(() => setOnline(false));
+
+    log('Interface initialisée', '')
+</script>
 </body>
 </html>
