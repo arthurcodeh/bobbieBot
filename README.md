@@ -124,9 +124,3 @@ Membres disponibles : `head`, `eyes`, `left`, `right`.
 
 Chaque sous-dossier contient un `README.md` décrivant sa structure interne.
 Le code source est documenté au format Doxygen (`/** @brief ... */`).
-
----
-
-## Auteur
-
-Arthur — Projet académique systèmes embarqués.
