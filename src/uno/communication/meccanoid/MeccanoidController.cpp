@@ -9,7 +9,7 @@
 #include "MeccanoidController.h"
 #include <string.h>
 
-void MeccanoidController::add_member(Membre* m) {
+void MeccanoidController::addMember(Member* m) {
     if (memberCount >= MAX_MEMBERS) {
         Serial.print(F("[Controller] ERREUR : nombre maximum de membres atteint ("));
         Serial.print(MAX_MEMBERS);
@@ -18,7 +18,7 @@ void MeccanoidController::add_member(Membre* m) {
     }
     
     m->begin();
-    membres[memberCount++] = m;
+    members[memberCount++] = m;
 
     if (DEBUG_MODE) {
         Serial.print(F("[Controller] Membre ajouté : "));
@@ -44,21 +44,21 @@ void MeccanoidController::update() {
 
     for (uint8_t i = 0; i < memberCount; i++) {
         Serial.print(F("[update] comparaison avec : "));
-        Serial.println(membres[i]->getName());
+        Serial.println(members[i]->getName());
 
-        if (strcmp(membres[i]->getName(), cmd.member) != 0) continue;
+        if (strcmp(members[i]->getName(), cmd.member) != 0) continue;
 
         Serial.println(F("[update] membre trouvé !"));
 
         if (cmd.action[0] != '\0') {
             Serial.println(F("[update] → branche action"));
-            if (membres[i]->getType() == MemberType::EYES) {
+            if (members[i]->getType() == MemberType::EYES) {
                 Serial.println(F("[update] → dispatch eyes"));
-                dispatchEyes(static_cast<Yeux*>(membres[i]), cmd.action);
+                dispatchEyes(static_cast<Eyes *>(members[i]), cmd.action);
             }
         } else {
             Serial.println(F("[update] → branche servo"));
-            membres[i]->setDestination(cmd.servoIndex, cmd.angle);
+            members[i]->setDestination(cmd.servoIndex, cmd.angle);
         }
 
         break;
@@ -71,7 +71,7 @@ void MeccanoidController::update() {
  * @param yeux   Pointeur vers le membre yeux.
  * @param action Nom de l'action: "off", "white", "red", "green", "blue".
  */
-void MeccanoidController::dispatchEyes(Yeux* yeux, const char* action) {
+void MeccanoidController::dispatchEyes(Eyes* yeux, const char* action) {
     if (DEBUG_MODE) {
         Serial.print(F("[dispatchEyes] len="));
         Serial.print(strlen(action));
@@ -83,11 +83,11 @@ void MeccanoidController::dispatchEyes(Yeux* yeux, const char* action) {
         Serial.println();
     }
 
-    if      (strcmp(action, "off")   == 0) yeux->eteindre();
-    else if (strcmp(action, "white") == 0) yeux->setBlanc();
-    else if (strcmp(action, "red")   == 0) yeux->setRouge();
-    else if (strcmp(action, "green") == 0) yeux->setVert();
-    else if (strcmp(action, "blue")  == 0) yeux->setBleu();
+    if      (strcmp(action, "off")   == 0) yeux->turnOff();
+    else if (strcmp(action, "white") == 0) yeux->setWhite();
+    else if (strcmp(action, "red")   == 0) yeux->setRed();
+    else if (strcmp(action, "green") == 0) yeux->setGreen();
+    else if (strcmp(action, "blue")  == 0) yeux->setBlue();
     else {
         Serial.print(F("[Controller] Action LED inconnue : "));
         Serial.println(action);
