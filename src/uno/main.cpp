@@ -15,10 +15,10 @@
 /**
  * Pointeurs vers les membres du robot. Initialisés dans setup() après la configuration de la communication.
  */
-Tete* tete         = nullptr;
-Yeux* yeux         = nullptr;
-Bras* brasGauche   = nullptr;
-Bras* brasDroit    = nullptr;
+Head* tete         = nullptr;
+Eyes* yeux         = nullptr;
+Arm* brasGauche   = nullptr;
+Arm* brasDroit    = nullptr;
 
 MeccanoidController controller;
 
@@ -37,14 +37,14 @@ void setup() {
 
     SerialProtocol::begin();
 
-    tete       = new Tete(PIN_HEAD);
-    yeux       = new Yeux(HEAD_LED_PIN);
+    tete       = new Head(PIN_HEAD);
+    yeux       = new Eyes(HEAD_LED_PIN);
     //brasGauche = new Bras(PIN_ARM_LEFT,  "left");
     //brasDroit = new Bras(PIN_ARM_RIGHT, "right");
     
 
-    controller.add_member(tete);
-    controller.add_member(yeux);
+    controller.addMember(tete);
+    controller.addMember(yeux);
     //controller.add_member(brasGauche);
     //controller.add_member(brasDroit);
 

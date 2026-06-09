@@ -38,7 +38,7 @@ enum class MemberType {GENERYC, EYES};
  * Gère l'interpolation de position et le retour visuel LED
  * pour un ou plusieurs servos Meccanoid chaînés.
  */
-class Membre {
+class Member {
 
 public:
     /** @brief Retourne le type du membre.
@@ -46,9 +46,9 @@ public:
      *
      * @return L'id du type de ce membre (par défaut : GENERYC).
      */
-    virtual ~Membre() = default;
+    virtual ~Member() = default;
     virtual MemberType getType() const {return MemberType::GENERYC; };
-    Membre(int pin, const char* name, const ServoSpec* specs, uint8_t count);
+    Member(int pin, const char* name, const ServoSpec* specs, uint8_t count);
 
     const char*         getName() const;
     void                setDestination(uint8_t index, int angle);
@@ -62,7 +62,7 @@ protected:
     const char* name;
     Chain       chain;
     uint8_t     servoCount;
-    int         vitesse = SERVO_DEFAULT_SPEED;
+    int         speed = SERVO_DEFAULT_SPEED;
 
     // Specs mécaniques (min, max, position, destination)
     struct ServoState {

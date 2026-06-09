@@ -21,7 +21,7 @@
  * @param specs Tableau de spécifications pour chaque servo (min, max).
  * @param count Nombre de servos dans ce membre (doit être ≤ MAX_SERVOS).
  */
-Membre::Membre(
+Member::Member(
     int                 pin,    // Pin de communication pour les servos
     const char*         name,   // Nom du membre pour les logs
     const ServoSpec* specs,
@@ -40,7 +40,7 @@ Membre::Membre(
 }
 // --- MÉTHODES PUBLIQUES ---
 /**@brief Retourne le nom du membre*/
-const char* Membre::getName() const {
+const char* Member::getName() const {
     return name;
 }
 
@@ -56,7 +56,7 @@ const char* Membre::getName() const {
  *
  * @note Sans effet si index est hors limites.
  */
-void Membre::setDestination(
+void Member::setDestination(
     const uint8_t index,
     const int     angle) {
     if (index >= servoCount) return;
@@ -98,7 +98,7 @@ void Membre::setDestination(
  * @note La vitesse d'avance est définie par le membre vitesse
  *       (valeur par défaut : SERVO_DEFAULT_SPEED).
  */
-void Membre::move() {
+void Member::move() {
     for (uint8_t i = 0; i < servoCount; i++) {
         ServoState& s = states[i];
 
@@ -129,10 +129,10 @@ void Membre::move() {
         int old  = s.position;
         int diff = s.destination - s.position;
 
-        if (abs(diff) <= vitesse) {
+        if (abs(diff) <= speed) {
             s.position = s.destination; // dernier pas : on se cale exactement
         } else {
-            s.position += (diff > 0) ? vitesse : -vitesse;
+            s.position += (diff > 0) ? speed : -speed;
         }
 
         chain.getServo(i).setPosition(s.position);
@@ -151,7 +151,7 @@ void Membre::move() {
     }
 }
 
-void Membre::begin(uint8_t cycles) {
+void Member::begin(uint8_t cycles) {
     Serial.print(F("["));
     Serial.print(name);
     Serial.print(F("] Synchronisation de la chaîne ("));
@@ -176,7 +176,7 @@ void Membre::begin(uint8_t cycles) {
  * @warning La LED est associée au servo par son index dans la chaîne;
  *          une chaîne mal configurée peut allumer la mauvaise LED.
  */
-void Membre::updateLED(uint8_t index, bool moving) {
+void Member::updateLED(uint8_t index, bool moving) {
     MeccanoServo servo = chain.getServo(index);
     if (moving) {
         servo.setColor(1, 0, 0); // Rouge

@@ -20,7 +20,7 @@
 #include "uno/config/Pins.h"
 
 
-class Yeux : public Membre {
+class Eyes : public Member {
 public:
     /**
      * @brief Identifie ce membre comme EYES pour un cast sécurisé.
@@ -32,38 +32,38 @@ public:
      * @brief Initialise les yeux sur le pin donné, sans servo associé.
      * @param pin Pin de communication avec la chaîne Meccanoid.
      */
-    explicit Yeux(int pin)
-        : Membre(pin, "eyes", nullptr, 0) {}
+    explicit Eyes(int pin)
+        : Member(pin, "eyes", nullptr, 0) {}
 
     // --- Raccourcis de couleur ---
     // Chaque méthode applique la même couleur aux deux yeux (index 0 et 1).
 
     /** Éteint les deux yeux. */
-    void eteindre() {
+    void turnOff() {
         chain.getLed(0).setColor(0, 0, 0, 0);
         chain.getLed(1).setColor(0, 0, 0, 0);
     }
 
     /** Allume les deux yeux en blanc. */
-    void setBlanc() {
+    void setWhite() {
         chain.getLed(0).setColor(7, 7, 7, 0);
         chain.getLed(1).setColor(7, 7, 7, 0);
     }
 
     /** Allume les deux yeux en rouge. */
-    void setRouge() {
+    void setRed() {
         chain.getLed(0).setColor(7, 0, 0, 0);
         chain.getLed(1).setColor(7, 0, 0, 0);
     }
 
     /** Allume les deux yeux en vert. */
-    void setVert() {
+    void setGreen() {
         chain.getLed(0).setColor(0, 7, 0, 0);
         chain.getLed(1).setColor(0, 7, 0, 0);
     }
 
     /** Allume les deux yeux en bleu. */
-    void setBleu() {
+    void setBlue() {
         chain.getLed(0).setColor(0, 0, 7, 0);
         chain.getLed(1).setColor(0, 0, 7, 0);
     }
@@ -76,7 +76,7 @@ public:
      * @param b Intensité bleu   (0–7)
      * @param fadetime Durée du fondu (0 = instantané, voir Meccanoid.h pour les valeurs)
      */
-    void setCouleur(byte r, byte g, byte b, byte fadetime = 0) {
+    void setColor(byte r, byte g, byte b, byte fadetime = 0) {
         chain.getLed(0).setColor(r, g, b, fadetime);
         chain.getLed(1).setColor(r, g, b, fadetime);
     }

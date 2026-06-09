@@ -31,10 +31,10 @@ static const uint8_t RIGHT_SERVO_COUNT = SERVOS_ARM_RIGHT;
  * et sont utilisées pour configurer les servos lors de l'initialisation du membre.
 
  */
-class Bras : public Membre {
+class Arm : public Member {
 public:
-    Bras(const int pin, const char* side)
-        : Membre(
+    Arm(const int pin, const char* side)
+        : Member(
             pin,
             side,
             (strcmp(side, "left") == 0) ? leftSpecs : rightSpecs,

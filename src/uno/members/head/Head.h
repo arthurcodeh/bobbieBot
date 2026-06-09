@@ -7,7 +7,7 @@
  *
  * La classe Tete hérite de Membre, qui gère la communication avec les servos et les limites mécaniques.
  * Tete fournit des méthodes spécifiques pour contrôler les mouvements de la tête de manière plus intuitive
- * (ex: tournerGauche(30) au lieu de setDestination(0, 30)).
+ * (ex: turnLeft(30) au lieu de setDestination(0, 30)).
  *
  * @param pin Le numéro de pin pour la communication avec les servos de la tête
  *
@@ -26,22 +26,22 @@
 static const uint8_t HEAD_SERVO_COUNT = SERVOS_HEAD;
 
 
-class Tete : public Membre {
+class Head : public Member {
 private:
     // Specs statiques des 2 servos de la tête
     // (statique = partagé par toutes les instances, stocké une seule fois en mémoire)
     static ServoSpec headSpecs[HEAD_SERVO_COUNT];
 
 public:
-    explicit Tete(int pin)
-        : Membre(pin, "head", headSpecs, HEAD_SERVO_COUNT) {}
+    explicit Head(int pin)
+        : Member(pin, "head", headSpecs, HEAD_SERVO_COUNT) {}
 
     // --- Raccourcis (simplifie les choses) ---
-    // tournerGauche(30) => setDestination(0, 30)
+    // turnLeft(30) => setDestination(0, 30)
     // angles => degrés d'écart par rapport à la position centrée (90°)
-    void tournerGauche(int angle)   { setDestination(0, 90 + angle); }
-    void tournerDroite(int angle)   { setDestination(0, 90 - angle); }
-    void inclinerHaut(int angle)    { setDestination(1, 90 - angle); }
-    void inclinerBas(int angle)     { setDestination(1, 90 + angle); }
-    void centrer()                  { setDestination(0, 90); setDestination(1, 90); }
+    void turnLeft(int angle)   { setDestination(0, 90 + angle); }
+    void turnRight(int angle)   { setDestination(0, 90 - angle); }
+    void tiltUp(int angle)    { setDestination(1, 90 - angle); }
+    void tiltDown(int angle)     { setDestination(1, 90 + angle); }
+    void center()                  { setDestination(0, 90); setDestination(1, 90); }
 };

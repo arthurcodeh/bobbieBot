@@ -34,7 +34,7 @@ public:
     *
     * @param m Pointeur vers le membre à enregistrer.
     */
-    void add_member(Membre* m);
+    void addMember(Member* m);
 
     /**
      * @brief Lit les commandes disponibles et les dispatche vers les membres.
@@ -43,7 +43,7 @@ public:
     void update();
 
 private:
-    Membre* membres[MAX_MEMBERS];
+    Member* members[MAX_MEMBERS];
     uint8_t memberCount = 0;
 
     /**
@@ -52,5 +52,5 @@ private:
      * @param yeux   Pointeur vers le membre yeux.
      * @param action Nom de l'action : "off", "white", "red", "green", "blue".
      */
-    void dispatchEyes(Yeux* yeux, const char* action);
+    void dispatchEyes(Eyes* yeux, const char* action);
 };
