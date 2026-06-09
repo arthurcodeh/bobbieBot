@@ -25,6 +25,7 @@
 #include <WiFi.h>
 #include <WebServer.h>
 #include <LittleFS.h>
+#include <ESPmDNS.h>
 #include "config/wifi.h"
 
 // ── Constantes ────────────────────────────────────────────────────
@@ -227,6 +228,13 @@ void setup() {
     } else {
         Serial.print(F("\n[WiFi] Connecté — IP : "));
         Serial.println(WiFi.localIP());
+
+        // Démarre mDNS : accessible via http://meccanoid.local
+        if (MDNS.begin("meccanoid")) {
+            Serial.println(F("[mDNS] Joignable sur http://meccanoid.local ✓"));
+        } else {
+            Serial.println(F("[mDNS] ERREUR : échec du démarrage mDNS"));
+        }
     }
 
     // --- Routes HTTP ---
